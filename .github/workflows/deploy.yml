@@ -22,7 +22,8 @@ jobs:
       - name: Ladda upp via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
+          # ftp.taklagret.se pekar på Lovable (huvudsajten) – webbhotellet nås via 3d.taklagret.se
+          server: 3d.taklagret.se
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
