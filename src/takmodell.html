@@ -133,6 +133,10 @@ body.drill [data-view]{opacity:.85}
 #trimp h3{margin:0 0 6px;font-family:var(--font-cond);font-size:20px}
 #trimp .row{display:flex;align-items:center;gap:4px;margin:4px 0}
 #trimp .row>span{width:136px;font-weight:600;font-size:16px}
+#trimp .fseg{display:flex;gap:6px}
+#trimp .fseg button{min-height:40px;padding:6px 16px;border-radius:10px;border:1px solid var(--line);background:none;font:inherit;font-weight:700;color:var(--ink);cursor:pointer}
+#trimp .fseg button[aria-pressed="true"]{background:var(--slate);border-color:var(--slate);color:var(--panel)}
+#trimp hr.tsep{border:0;border-top:1px solid var(--line);margin:8px 0}
 #trimp .row em{font-style:normal;color:var(--muted);font-size:14px;margin-left:8px;min-width:150px}
 .seg{display:inline-flex;background:rgba(127,127,127,.12);border-radius:12px;padding:4px;gap:4px;margin:0 0 12px}
 .seg button{border:0;background:transparent;font:600 17px var(--font);padding:10px 18px;border-radius:9px;cursor:pointer;min-height:46px}
@@ -142,24 +146,19 @@ body.drill [data-view]{opacity:.85}
 #loading.done{opacity:0;pointer-events:none}
 /* ---- mobil (body.mob sätts av skriptet för smala skärmar och telefoner) */
 #mtabs,#mtop,#grab,#pclose{display:none}
-#guide{position:fixed;inset:0;z-index:90;pointer-events:none}
-#guide[hidden]{display:none}
-#guide .g-ring{position:fixed;border:3px solid var(--signal);border-radius:14px;box-shadow:0 0 0 9999px rgba(10,16,20,.28),0 0 24px rgba(242,183,5,.55);transition:left .55s cubic-bezier(.3,.9,.3,1),top .55s cubic-bezier(.3,.9,.3,1),width .55s cubic-bezier(.3,.9,.3,1),height .55s cubic-bezier(.3,.9,.3,1)}
-#guide .g-arrow{position:fixed;color:var(--signal);filter:drop-shadow(0 3px 6px rgba(0,0,0,.35));transition:left .55s cubic-bezier(.3,.9,.3,1),top .55s cubic-bezier(.3,.9,.3,1)}
-#guide .g-arrow svg{display:block;animation:gbob 1.1s ease-in-out infinite}
-#guide .g-arrow.up svg{transform:rotate(180deg);animation-name:gbobu}
-@keyframes gbob{0%,100%{transform:translateY(-6px)}50%{transform:translateY(5px)}}
-@keyframes gbobu{0%,100%{transform:rotate(180deg) translateY(-6px)}50%{transform:rotate(180deg) translateY(5px)}}
-#guide .g-bub{position:fixed;width:min(320px,calc(100vw - 24px));background:var(--card);color:var(--ink);border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.3);padding:16px 18px 14px;pointer-events:auto;transition:left .55s cubic-bezier(.3,.9,.3,1),top .55s cubic-bezier(.3,.9,.3,1),opacity .3s}
-#guide .g-step{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-#guide .g-t{display:block;font-family:var(--font-cond);font-size:22px;margin:2px 0 4px}
-#guide .g-x{margin:0 0 12px;font-size:15px;line-height:1.45;color:var(--muted)}
-#guide .g-act{display:flex;gap:8px;justify-content:flex-end}
-#guide .g-act button{min-height:42px;padding:8px 16px;border-radius:10px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
-#guide .g-act .g-next{background:var(--slate);border-color:var(--slate);color:var(--panel)}
-#guide .g-prog{height:3px;background:var(--line);border-radius:2px;margin-top:12px;overflow:hidden}
-#guide .g-prog i{display:block;height:100%;width:0;background:var(--signal)}
-@media (prefers-reduced-motion:reduce){#guide .g-arrow svg{animation:none}#guide .g-ring,#guide .g-arrow,#guide .g-bub{transition:none}}
+#tips{position:fixed;inset:0;z-index:85;pointer-events:none;transition:opacity .45s}
+#tips[hidden]{display:none}
+#tips.ut{opacity:0}
+#tips svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#tips path.tl{fill:none;stroke:#e9b52c;stroke-width:3.2;stroke-linecap:round;stroke-dasharray:7 7;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45));animation:tpdash 1.1s linear infinite,tppuls 1.6s ease-in-out infinite}
+#tips circle.td{fill:#f3c84b;animation:tpdot 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes tpdash{to{stroke-dashoffset:-28}}
+@keyframes tppuls{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes tpdot{0%,100%{transform:scale(.7);opacity:.7}50%{transform:scale(1.25);opacity:1}}
+#tips .tp{position:fixed;max-width:205px;background:rgba(18,22,25,.9);color:#fff;border:1.5px solid #e9b52c;border-radius:12px;padding:8px 12px 9px;font-size:13px;line-height:1.35;animation:tpglow 1.6s ease-in-out infinite;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+#tips .tp b{display:block;color:#f3c84b;font-size:15px;margin-bottom:1px}
+@keyframes tpglow{0%,100%{box-shadow:0 8px 22px rgba(0,0,0,.32),0 0 0 0 rgba(233,181,44,.5)}50%{box-shadow:0 8px 22px rgba(0,0,0,.32),0 0 0 7px rgba(233,181,44,0)}}
+@media (prefers-reduced-motion:reduce){#tips path.tl,#tips circle.td,#tips .tp{animation:none}}
 html:not([data-lage="skarm"]) #demo{display:none}
 #mtop .stang.mx{order:9;margin-left:auto;width:44px;height:44px;border:0;border-radius:12px;background:var(--chip);color:var(--ink);display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.12)}
 #mtop .stang.mx[hidden],.stang[hidden]{display:none!important}
@@ -279,7 +278,7 @@ body.mob.land #mtop button{min-height:40px}
     </div>
     <div id="bar">
       <div class="grp" id="colg" role="group" aria-label="Takfärg"></div>
-      <div class="grp"><button class="btn" id="trimb" type="button" aria-expanded="false" aria-controls="trimp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="8" cy="8" r="3.2"/><circle cx="16" cy="8" r="3.2"/><circle cx="12" cy="15.5" r="3.2"/></svg>Detaljfärger</button></div>
+      <div class="grp"><button class="btn" id="trimb" type="button" aria-expanded="false" aria-controls="trimp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="8" cy="8" r="3.2"/><circle cx="16" cy="8" r="3.2"/><circle cx="12" cy="15.5" r="3.2"/></svg>Husfärger</button></div>
       <div class="grp">
         <label class="rng"><span class="lbl">Visa skikten</span><input id="cut" type="range" min="0" max="100" value="50" aria-label="Visa skikten under pannorna"></label>
         <label class="rng"><span class="lbl">Lyft isär</span><input id="exp" type="range" min="0" max="100" value="0" aria-label="Lyft isär skikten"></label>
@@ -297,12 +296,11 @@ body.mob.land #mtop button{min-height:40px}
         <button class="btn stang" type="button" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Stäng</span></button>
         <button class="btn" id="demo" type="button" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg><span>Demoläge</span></button>
         <button class="btn" id="dots" aria-pressed="true">Visa punkter</button>
-        <button class="btn" id="guideb" type="button">Visa guiden</button>
         <button class="btn" id="fs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Helskärm</button>
       </div>
     </div>
     <div id="trimp" hidden></div>
-    <div id="guide" hidden><div class="g-ring"></div><div class="g-arrow"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M5.5 12.5L12 19l6.5-6.5"/></svg></div><div class="g-bub" role="dialog" aria-live="polite"><div class="g-step"></div><b class="g-t"></b><p class="g-x"></p><div class="g-act"><button type="button" class="g-skip">Hoppa över</button><button type="button" class="g-next">Nästa</button></div><div class="g-prog"><i></i></div></div></div>
+    <div id="tips" hidden aria-hidden="true"><svg><defs><marker id="tparr" viewBox="0 0 10 10" refX="6.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#e9b52c"/></marker></defs></svg></div>
 <nav id="mtabs" aria-label="Meny"><button type="button" data-mt="delar" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Delar</button><button type="button" data-mt="farg" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3.2"/><circle cx="16" cy="8" r="3.2"/><circle cx="12" cy="15.5" r="3.2"/></svg>Färger</button><button type="button" data-mt="vyer" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg>Vyer</button><button type="button" data-mt="skikt" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>Skikt</button></nav>
     <div id="loading">Bygger taket …</div>
   </div>
@@ -1724,7 +1722,26 @@ function lockTex(base,seed,amp=22,hiA=0.10,loA=0.38){
   const mk=(cv,srgb)=>{const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;if(srgb)t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t;};
   return {map:mk(c,true),bump:mk(b,false)};}
 const FAS={red:lockTex('#8a2a1c',41),black:lockTex('#2b2e31',43,12,0.07,0.5)};
-const facM=k=>M(null,'fas_'+k,{color:0xffffff,map:FAS[k].map,bumpMap:FAS[k].bump,bumpScale:2.4,roughness:.9});
+const FACMAT={};
+const facM=(k,hm)=>{const m=M(null,'fas_'+(hm||k),{color:0xffffff,map:FAS[k].map,bumpMap:FAS[k].bump,bumpScale:2.4,roughness:.9});m.userData.fasad=true;if(hm)FACMAT[hm]=m;return m;};
+// tegelfasad: 4 stenar per meter (250 mm + fog), 13 skift per meter, löpförband
+function brickFas(base,seed,fog='#c9c5bd'){const W=512,H=512,rows=13,cols=4,rh=H/rows,cw=W/cols,f=5;
+  const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');const b=document.createElement('canvas');b.width=W;b.height=H;const q=b.getContext('2d');
+  const r=rnd(seed);g.fillStyle=fog;g.fillRect(0,0,W,H);q.fillStyle='#303030';q.fillRect(0,0,W,H);const bc=new THREE.Color(base);
+  for(let j=0;j<rows;j++){const off=(j%2)*cw/2;for(let i=-1;i<=cols;i++){const x=i*cw+off,y=j*rh,v=0.86+r()*0.24,h=(r()-0.5)*0.03;
+    const cc=bc.clone().offsetHSL(h,0,0).multiplyScalar(v);g.fillStyle='#'+cc.getHexString();g.fillRect(x+f/2,y+f/2,cw-f,rh-f);
+    for(let k=0;k<26;k++){g.fillStyle=`rgba(${r()<.5?'0,0,0':'255,255,255'},${0.04+r()*0.07})`;g.fillRect(x+f/2+r()*(cw-f),y+f/2+r()*(rh-f),1+r()*3,1+r()*2);}
+    q.fillStyle='#d8d8d8';q.fillRect(x+f/2,y+f/2,cw-f,rh-f);q.fillStyle='#f2f2f2';q.fillRect(x+f/2,y+f/2,cw-f,2);}}
+  const mk=(cv,srgb)=>{const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;if(srgb)t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t;};
+  return {map:mk(c,true),bump:mk(b,false)};}
+const FASF={tra:[['falu','Faluröd','#8a2a1c'],['svart','Svart','#2b2e31'],['vit','Vit','#e6e4dd'],['gra','Grå','#8a8f92'],['gul','Gul','#d4ad55']],
+  tegel:[['tegelrod','Tegelröd','#9b4a33'],['gul','Gult tegel','#d2b077'],['vit','Vitt tegel','#e2ded5'],['gra','Grått tegel','#8d8b86'],['svart','Svart tegel','#2f2e2d']]};
+const FACST={en:['tra','falu'],tva:['tra','falu'],vinkel:['tra','svart']},FACTEX={red:FAS.red,black:FAS.black};
+function facTex(typ,col){const k=typ+':'+col;if(FACTEX[k])return FACTEX[k];if(typ==='tra'&&col==='falu')return FACTEX[k]=FAS.red;if(typ==='tra'&&col==='svart')return FACTEX[k]=FAS.black;
+  const hex=FASF[typ].find(c=>c[0]===col)[2],seed=61+Object.keys(FACTEX).length*7;
+  return FACTEX[k]=typ==='tegel'?brickFas(hex,seed,col==='svart'?'#5a5855':'#c9c5bd'):lockTex(hex,seed,col==='vit'?10:col==='gul'?16:18,col==='vit'?0.05:0.09,col==='vit'?0.22:0.36);}
+function setFasad(typ,col,hm=HM){if(!FASF[typ].some(c=>c[0]===col))col=FASF[typ][0][0];FACST[hm]=[typ,col];const m=FACMAT[hm];if(m){const t=facTex(typ,col);m.map=t.map;m.bumpMap=t.bump;m.bumpScale=typ==='tegel'?3.2:2.4;m.roughness=typ==='tegel'?.94:.9;m.needsUpdate=true;}
+  if(typeof shd==='function')shd();if(typeof inval==='function')inval();if(typeof renderTrimUI==='function'&&!trimp.hidden)renderTrimUI();}
 // interiör bakom glaset: mörkt rum med gardiner, 2 × 2 varianter
 const interiorTex=ctex(512,512,(g,w,h)=>{const r=rnd(88);
   for(let qi=0;qi<4;qi++){const ox=(qi%2)*256,oy=(qi>>1)*256;
@@ -1830,7 +1847,7 @@ function doorGeo(B,F,o){const {u0,u1,y0,y1}=o,cas='trim:'+(o.cas||'white'),cw=0.
 /* ---- husen */
 const YRF=YW+1.8*TN;                 // kupans (frontespisens) nock
 const HWP=1.55,WTP=GYM.tva+2.75,YWP=WTP+RAF/CS,YRP=YWP+HWP*TN;   // farstukvisten
-function houseMats(fk,ck){return {wall:facM(fk),sock:sockM,'trim:white':trimMat('white'),'trim:dark':trimMat('dark'),'sill:white':sillMat('white'),'sill:dark':sillMat('dark'),
+function houseMats(fk,ck,hm){return {wall:facM(fk,hm),sock:sockM,'trim:white':trimMat('white'),'trim:dark':trimMat('dark'),'sill:white':sillMat('white'),'sill:dark':sillMat('dark'),
   sash:sashMat,glass:glassM,interior:interiorM,door:M(null,'door2',{color:0xf3f2ee,roughness:.48}),metal:metalM,deck:deckM,granite:graniteM,gravel:gravelM}}
 // en fasad: vägg med öppningar, sockel, vattbräda, knutbrädor och alla fönster/dörrar
 // f: {O,R,u0,u1,gy,top, wins:[...], doors:[...], lun:[...], cA,cB, cas}
@@ -1873,7 +1890,7 @@ function buildHouses(){
       wins:[{u0:-2.2,u1:-1.0,y0:wy[0],y1:wy[1]},{u0:-0.36,u1:0.36,y0:3.62,y1:4.3,rows:2}]});
     const Fd=facade(V3(0,0,HW),V3(1,0,0));deckGeo(B,Fd,1.75,3.85,1.5,0.36,0,2);
     gravelRing(B,-7,7,-HW,HW,0);B.push('gravel',bx(2.2,3.4,0,0.02,HW+2.3,12));
-    flushBatch(B,P,houseMats('red'));
+    flushBatch(B,P,houseMats('red',null,'en'));
     add(P,boxMM(-6.8,6.8,WT,WT+0.2,-3.8,3.8),isoM,null,null);add(P,mergeGeometries(atticGeo(B,-7,7,-HW,HW,'x').map(sm)),tsM,null,null);}
   /* --- tvåplanshus med kupa (bild 3): frontespis mitt på framsidan och farstukvist */
   {const P=HOUSE.tva,B=batch(),gy=GYM.tva,g0=[gy+1.2,gy+2.55],s1=[1.45,2.55];
@@ -1895,7 +1912,7 @@ function buildHouses(){
     B.push(tm,bx(-1.56,1.56,WTP-0.2,WTP,pz-0.06,pz+0.06));
     {const sh=new THREE.Shape([new THREE.Vector2(-1.56,WTP),new THREE.Vector2(1.56,WTP),new THREE.Vector2(0,YRP-RAF/CS-0.01)]);const g=new THREE.ExtrudeGeometry(sh,{depth:0.03,bevelEnabled:false});g.translate(0,0,pz-0.02);B.push(tm,g);}
     gravelRing(B,-7,7,-HW,HW,gy);B.push('gravel',bx(-1.0,1.0,gy,gy+0.02,pz+0.84,12));
-    flushBatch(B,P,houseMats('red'));
+    flushBatch(B,P,houseMats('red',null,'tva'));
     add(P,boxMM(-6.8,6.8,WT,WT+0.2,-3.8,3.8),isoM,null,null);add(P,mergeGeometries(atticGeo(B,-7,7,-HW,HW,'x').map(sm)),tsM,null,null);}
   /* --- vinkelhus (bild 1): huvudlänga och flygel, svart lockpanel */
   {const P=HOUSE.vinkel,B=batch(),cas='dark',T=[0.75,2.45];
@@ -1914,7 +1931,7 @@ function buildHouses(){
     const Fm=facade(V3(0,0,HW),V3(1,0,0));deckGeo(B,Fm,2.2,6.9,1.7,0.36,0,2);
     const Fw=facade(V3(0,0,7.5),V3(1,0,0));deckGeo(B,Fw,-2.3,-0.7,1.0,0.36,0,2);
     gravelRing(B,-0.5,7,-HW,HW,0);gravelRing(B,-8.5,-0.5,-HW,7.5,0);B.push('gravel',bx(3.6,4.8,0,0.02,HW+2.8,12));
-    flushBatch(B,P,houseMats('black'));
+    flushBatch(B,P,houseMats('black',null,'vinkel'));
     add(P,mergeGeometries([boxMM(-0.3,6.8,WT,WT+0.2,-3.8,3.8),boxMM(-8.3,-0.7,WT,WT+0.2,-3.8,7.3)].map(sm)),isoM,null,null);
     add(P,mergeGeometries([...atticGeo(B,-0.4,7,-HW,HW,'x'),...atticGeo(B,-8.5,-0.5,-HW,7.5,'z')].map(sm)),tsM,null,null);}
 }
@@ -2180,7 +2197,7 @@ function hmExp(e){const o={rasp:0,papp:1,stro:2,bar:3,pan:4};for(const sd of XSI
 
 /* ---- punkter som skyms av husets väggar eller av kupan och flygeln (kollas några gånger per sekund) */
 let hsT=0;const hsRay=new THREE.Raycaster();
-function hsOcc(now){if(now-hsT<280)return;hsT=now;const occ=[];HOUSE[HM].traverse(o=>{if(o.isMesh&&o.material&&o.material.map&&FAS.red.map&&(o.material.map===FAS.red.map||o.material.map===FAS.black.map))occ.push(o);});
+function hsOcc(now){if(now-hsT<280)return;hsT=now;const occ=[];HOUSE[HM].traverse(o=>{if(o.isMesh&&o.material&&o.material.map&&FAS.red.map&&o.material.userData.fasad)occ.push(o);});
   for(const g of XRG)if(g.visible)g.traverse(o=>{if(o.isMesh&&o.visible&&(o.userData.part==='raspont'))occ.push(o);});
   for(const h of HS){h.occ=false;if(drillKey||!occ.length)continue;const p=h.pos(),d=p.clone().sub(camera.position),L=d.length();hsRay.set(camera.position,d.normalize());hsRay.far=L-0.12;
     const hit=hsRay.intersectObjects(occ,false).find(q=>{const cp=q.object.material.clippingPlanes;return !(cp&&cp.some(pl=>pl.distanceToPoint(q.point)<-0.004));});if(hit)h.occ=true;}}
@@ -2190,7 +2207,7 @@ const HMV={
   en:{hem:[[19.5,8.6,21.5],[0.3,2.6,0]],takfot:[[6.9,3.3,8.6],[5.3,3.1,4.4]],baksida:[[-13.5,11,-15.5],[-0.6,4.4,-1.6]],nock:[[4.5,10.8,6.8],[0.6,YR,0.6]],gavel:[[XR+8.6,5.4,3.4],[XR,4.2,1.2]]},
   tva:{hem:[[20,7.4,22.5],[0.2,1.5,0.6]],takfot:[[6.9,3.3,8.6],[5.3,3.1,4.4]],baksida:[[-13.5,9.8,-15.5],[-0.6,3.2,-1.6]],nock:[[4.5,10.8,6.8],[0.6,YR,0.6]],gavel:[[XR+9.4,4.2,3.4],[XR,2.8,1.2]]},
   vinkel:{hem:[[17.5,8.8,23.5],[-1.4,2.6,1.8]],takfot:[[6.9,3.3,8.6],[5.3,3.1,4.4]],baksida:[[-15,11,-15],[-1.4,4.4,-1.6]],nock:[[2.5,10.8,8.5],[-1.2,YR,0.6]],gavel:[[XR+8.6,5.4,3.4],[XR,4.2,1.2]]}};
-function setHM(h,init){if(LC.shop&&!init)setTimeout(()=>ctaFor(sel),60);if(!init&&h===HM)return;if(drillKey)exitDrill(true);const prev=HM;HM=h;
+function setHM(h,init){if(!init&&!trimp.hidden)setTimeout(renderTrimUI,0);if(LC.shop&&!init)setTimeout(()=>ctaFor(sel),60);if(!init&&h===HM)return;if(drillKey)exitDrill(true);const prev=HM;HM=h;
   for(const k in HOUSE)HOUSE[k].visible=k===HM;for(const g of XRG)g.visible=g.userData.hm.includes(HM);ENV.position.y=GYM[HM];
   for(const m of pick){const mv=m.userData.mv;if(mv){const mm=mv[HM]||mv.en;if(m.material!==mm)m.material=mm;}}
   applyTTVis();
@@ -2879,8 +2896,10 @@ function renderColUI(){
   else{colg.innerHTML=`<span class="lbl">Takfärg</span><button class="btn" data-col="r" aria-pressed="${mode==='r'}"><span class="sw" style="background:#9c4127"></span>Tegelröd</button><button class="btn" data-col="s" aria-pressed="${mode==='s'}"><span class="sw" style="background:#2a2b2c"></span>Svart</button>`;
     colg.querySelectorAll('[data-col]').forEach(b=>b.addEventListener('click',()=>{setMode(b.dataset.col);touch();}));}}
 const trimb=document.getElementById('trimb'),trimp=document.getElementById('trimp');
-function renderTrimUI(){trimp.innerHTML=`<h3>Detaljfärger</h3>${TRIMN.map(([s,n])=>`<div class="row"><span>${n}</span>${Object.entries(palOf(s)).map(([c,t])=>`<button class="swb" type="button" data-ts="${s}" data-tc="${c}" aria-pressed="${trimOf(s)===c}" aria-label="${n}: ${t.n}" title="${t.n}"><span style="background:${c==='silver'?'linear-gradient(135deg,#d9dcdf,#8e9296 55%,#c4c7ca)':cssHex(t.hex)}"></span></button>`).join('')}<em>${palOf(s)[trimOf(s)].n}${trim[s]?'':' (följer taket)'}</em></div>`).join('')}`;
-  trimp.querySelectorAll('[data-ts]').forEach(b=>b.addEventListener('click',()=>{setTrim(b.dataset.ts,b.dataset.tc);touch();}));}
+function renderTrimUI(){const [ft,fc]=FACST[HM];trimp.innerHTML=`<h3>Hus- och detaljfärger</h3><div class="row"><span>Fasad</span><div class="seg fseg">${[['tra','Trä'],['tegel','Tegel']].map(([k,n])=>`<button type="button" data-ft="${k}" aria-pressed="${ft===k}">${n}</button>`).join('')}</div></div><div class="row"><span>Husfärg</span>${FASF[ft].map(([k,n,h])=>`<button class="swb" type="button" data-fc="${k}" aria-pressed="${fc===k}" aria-label="Husfärg: ${n}" title="${n}"><span style="background:${h}"></span></button>`).join('')}<em>${FASF[ft].find(c=>c[0]===fc)[1]}</em></div><hr class="tsep">${TRIMN.map(([s,n])=>`<div class="row"><span>${n}</span>${Object.entries(palOf(s)).map(([c,t])=>`<button class="swb" type="button" data-ts="${s}" data-tc="${c}" aria-pressed="${trimOf(s)===c}" aria-label="${n}: ${t.n}" title="${t.n}"><span style="background:${c==='silver'?'linear-gradient(135deg,#d9dcdf,#8e9296 55%,#c4c7ca)':cssHex(t.hex)}"></span></button>`).join('')}<em>${palOf(s)[trimOf(s)].n}${trim[s]?'':' (följer taket)'}</em></div>`).join('')}`;
+  trimp.querySelectorAll('[data-ts]').forEach(b=>b.addEventListener('click',()=>{setTrim(b.dataset.ts,b.dataset.tc);touch();}));
+  trimp.querySelectorAll('[data-ft]').forEach(b=>b.addEventListener('click',()=>{setFasad(b.dataset.ft,FACST[HM][1]);touch();}));
+  trimp.querySelectorAll('[data-fc]').forEach(b=>b.addEventListener('click',()=>{setFasad(FACST[HM][0],b.dataset.fc);touch();}));}
 trimb.addEventListener('click',e=>{e.stopPropagation();const o=trimp.hidden;trimp.style.bottom=(document.getElementById('bar').offsetHeight+30)+'px';trimp.hidden=!o;trimb.setAttribute('aria-expanded',o);if(o)renderTrimUI();touch();});
 document.addEventListener('pointerdown',e=>{if(!MOB&&!trimp.hidden&&!trimp.contains(e.target)&&e.target!==trimb&&!trimb.contains(e.target)){trimp.hidden=true;trimb.setAttribute('aria-expanded','false');}});
 renderColUI();applyColors();
@@ -3021,35 +3040,43 @@ tmp.copy(ctaP()).project(camera);if(tmp.z>1){shopCta.style.opacity=0;return;}
   // ovanför punkten, eller under den om rutan annars hamnar över reglagen upptill
   const above=py-22-h>=top;let y=above?py-22:Math.max(py+22,top-6);y=Math.max(above?h+8:8,Math.min(r.height-(above?8:h+8),y));
   shopCta.style.opacity=1;shopCta.style.transform=`translate(${x}px,${y}px) translate(-50%,${above?'-100%':'0'})`;}
-/* ---- guide: en animerad pil visar förstagångsbesökare funktionerna (en gång per webbläsare, kan visas igen med knappen) */
-var GSTEG=[
-  {d:'#cut',m:'[data-mt="skikt"]',t:'Visa skikten',x:'Dra reglaget och se lagren under pannorna: läkt, underlagstäckning och råspont.'},
-  {d:'#exp',m:'[data-mt="skikt"]',t:'Lyft isär',x:'Lyft isär skikten och se hur taket är uppbyggt, lager för lager.'},
-  {d:'.ttg',m:'#mtt',t:'Byt taktyp',x:'Välj betongpannor, lertegel eller plåt.'},
-  {d:'#hmg',m:'#mhm',t:'Byt husmodell',x:'Prova enplanshus, tvåplanshus med kupa eller vinkelhus.'},
-  {d:'#colg',m:'[data-mt="farg"]',t:'Ändra färger',x:'Välj takets färg och se resultatet direkt.'},
-  {d:'#trimb',m:'[data-mt="farg"]',t:'Ändra detaljfärger',x:'Byt färg på vindskivor, plåtdetaljer och takavvattning.'}];
-var GI=-1,gTimer=null,gT0=0;const GEL=document.getElementById('guide'),GDUR=6500;
-function gTarget(i){const st=GSTEG[i];const el=document.querySelector(MOB?st.m:st.d);return el&&(el.closest('.rng')||el);}
-function gPlace(){if(GI<0)return;const el=gTarget(GI);if(!el){gNext();return;}const r=el.getBoundingClientRect(),pad=6;
-  const ring=GEL.querySelector('.g-ring'),arr=GEL.querySelector('.g-arrow'),bub=GEL.querySelector('.g-bub');
-  Object.assign(ring.style,{left:(r.left-pad)+'px',top:(r.top-pad)+'px',width:(r.width+pad*2)+'px',height:(r.height+pad*2)+'px'});
-  const below=r.top+r.height/2<innerHeight/2,bw=bub.offsetWidth,bh=bub.offsetHeight,cx=r.left+r.width/2;
-  const ay=below?r.bottom+pad+4:r.top-pad-50,by=below?ay+50:ay-bh+4;
-  arr.classList.toggle('up',below);arr.style.left=(cx-23)+'px';arr.style.top=ay+'px';
-  bub.style.left=Math.max(12,Math.min(innerWidth-bw-12,cx-bw/2))+'px';bub.style.top=Math.max(12,Math.min(innerHeight-bh-12,by))+'px';}
-function gShow(i){GI=i;const st=GSTEG[i];GEL.querySelector('.g-step').textContent=`Steg ${i+1} av ${GSTEG.length}`;GEL.querySelector('.g-t').textContent=st.t;GEL.querySelector('.g-x').textContent=st.x;
-  GEL.querySelector('.g-next').textContent=i===GSTEG.length-1?'Klart':'Nästa';gPlace();requestAnimationFrame(gPlace);
-  // räkna bara aktiv tid (högst 100 ms per tick), så att ett segt ögonblick aldrig hoppar över steg
-  clearInterval(gTimer);let acc=0,lt=performance.now();const bar=GEL.querySelector('.g-prog i');bar.style.width='0';gTimer=setInterval(()=>{const n=performance.now();acc+=Math.min(100,n-lt);lt=n;const k=acc/GDUR;bar.style.width=Math.min(100,k*100)+'%';if(k>=1)gNext();},60);}
-function gNext(){if(GI+1<GSTEG.length)gShow(GI+1);else gStop();}
-function gStop(){clearInterval(gTimer);GI=-1;GEL.hidden=true;try{localStorage.setItem('tak.guide','1');}catch(_){}}
-function gStart(){if(DEMO)return;if(MOB)setTab(null);GEL.hidden=false;gShow(0);}
-GEL.querySelector('.g-next').addEventListener('click',e=>{e.stopPropagation();gNext();});
-GEL.querySelector('.g-skip').addEventListener('click',e=>{e.stopPropagation();gStop();});
-document.getElementById('guideb').addEventListener('click',e=>{e.stopPropagation();if(MOB)setTab(null);gStart();});
-addEventListener('resize',()=>{if(GI>=0)gPlace();});
-function gAuto(){let seen=false;try{seen=localStorage.getItem('tak.guide')==='1';}catch(_){}if(!seen&&LAGE!=='skarm'&&!/[?&]nog\b/.test(location.search))setTimeout(()=>{if(!DEMO&&GI<0)gStart();},1600);}
+/* ---- tips för förstagångsbesökare: guldtonade, pulserande pilar mot alla funktioner samtidigt; försvinner vid första tryck */
+var TIPS_D=[
+  {s:'.ttg',p:['right','below'],t:'Byt taktyp',x:'Betong, lertegel eller plåt.'},
+  {s:'#hmg',p:['right','below'],t:'Byt husmodell',x:'Enplan, tvåplan eller vinkelhus.'},
+  {s:'#colg',t:'Ändra takfärg',x:'Se taket i olika kulörer.'},
+  {s:'#trimb',t:'Husfärger',x:'Fasad i trä eller tegel, husfärg och detaljer.'},
+  {s:'#cut',t:'Visa skikten',x:'Se lagren under pannorna.'},
+  {s:'#exp',p:['right','above'],t:'Lyft isär',x:'Se taket lager för lager.'}];
+var TIPS_M=[
+  {s:'#mtt',t:'Byt taktyp',x:'Betong, lertegel eller plåt.'},
+  {s:'#mhm',t:'Byt husmodell',x:'Enplan, tvåplan eller vinkelhus.'},
+  {s:'[data-mt="farg"]',t:'Färger',x:'Takfärg, fasad och husfärg.'},
+  {s:'[data-mt="skikt"]',t:'Skikt',x:'Visa skikten och lyft isär.'}];
+const TEL=document.getElementById('tips');let tipsOn=false;
+function tipsLayout(){if(!tipsOn)return;const svg=TEL.querySelector('svg');TEL.querySelectorAll('.tp').forEach(e=>e.remove());svg.querySelectorAll('.tl,.td').forEach(e=>e.remove());
+  const W=innerWidth,H=innerHeight,NS='http://www.w3.org/2000/svg',pad=8;
+  // ytor som rutorna inte får täcka: alla reglage och paneler
+  const block=[...document.querySelectorAll('#intro .grp,#bar .grp,#rail .grp,#panel,#mtop button,#mtabs,#trimp:not([hidden])')].map(e=>e.getBoundingClientRect()).filter(r=>r.width&&r.height);
+  const hit=(a,b)=>{const L=b.left??b.l,R=b.right??b.r,T=b.top??b.t,B=b.bottom??b.b;return a.l<R+pad&&a.r>L-pad&&a.t<B+pad&&a.b>T-pad;};const placed=[];
+  for(const tp of (MOB?TIPS_M:TIPS_D)){let el=document.querySelector(tp.s);if(!el)continue;el=el.closest('.rng')||el;const r=el.getBoundingClientRect();if(!r.width)continue;
+    const d=document.createElement('div');d.className='tp';d.innerHTML=`<b>${esc(tp.t)}</b>${esc(tp.x)}`;TEL.appendChild(d);const w=d.offsetWidth,h=d.offsetHeight,cx=r.left+r.width/2,cy=r.top+r.height/2;
+    let best=null;
+    sok:for(const dist of [22,48,80,120,170,230])for(const dir of (tp.p||['above','right','below','left'])){let bx,by,ax,ay;
+      if(dir==='above'){bx=cx-w/2;by=r.top-dist-h;ax=cx;ay=r.top-3;}else if(dir==='below'){bx=cx-w/2;by=r.bottom+dist;ax=cx;ay=r.bottom+3;}
+      else if(dir==='right'){bx=r.right+dist;by=cy-h/2;ax=r.right+3;ay=cy;}else{bx=r.left-dist-w;by=cy-h/2;ax=r.left-3;ay=cy;}
+      bx=Math.max(8,Math.min(W-w-8,bx));if(by<8||by+h>H-8)continue;const box={l:bx,r:bx+w,t:by,b:by+h};
+      if(block.some(q=>hit(box,q))||placed.some(q=>hit(box,q)))continue;best={box,ax,ay};break sok;}
+    if(!best){d.remove();continue;}placed.push(best.box);d.style.left=best.box.l+'px';d.style.top=best.box.t+'px';
+    // pil från rutans närmaste kant till funktionen, lätt böjd
+    const sx=Math.max(best.box.l,Math.min(best.box.r,best.ax)),sy=Math.max(best.box.t,Math.min(best.box.b,best.ay)),mx=(sx+best.ax)/2,my=(sy+best.ay)/2,dx=best.ax-sx,dy=best.ay-sy,L=Math.hypot(dx,dy)||1,k=Math.min(26,L*0.18);
+    const path=document.createElementNS(NS,'path');path.setAttribute('class','tl');path.setAttribute('d',`M${sx},${sy} Q${mx-dy/L*k},${my+dx/L*k} ${best.ax},${best.ay}`);path.setAttribute('marker-end','url(#tparr)');svg.appendChild(path);
+    const dot=document.createElementNS(NS,'circle');dot.setAttribute('class','td');dot.setAttribute('cx',best.ax);dot.setAttribute('cy',best.ay);dot.setAttribute('r',5);svg.appendChild(dot);}}
+function tipsShow(){if(DEMO)return;if(MOB)setTab(null);tipsOn=true;TEL.hidden=false;TEL.classList.remove('ut');tipsLayout();}
+function tipsHide(){if(!tipsOn)return;tipsOn=false;try{localStorage.setItem('tak.tips','1');}catch(_){}TEL.classList.add('ut');setTimeout(()=>{if(!tipsOn)TEL.hidden=true;},460);}
+for(const ev of ['pointerdown','wheel','keydown'])document.addEventListener(ev,()=>tipsHide(),{capture:true,passive:true});
+addEventListener('resize',()=>tipsLayout());
+function gAuto(){let seen=false;try{seen=localStorage.getItem('tak.tips')==='1';}catch(_){}if(!seen&&LAGE!=='skarm'&&!/[?&]nog\b/.test(location.search))setTimeout(()=>{if(!DEMO&&!tipsOn)tipsShow();},1400);}
 /* ---- demoläge: en slinga som visar modellen av sig själv tills någon rör skärmen */
 var DEMO=0,DEMOI=0;const demoBtn=document.getElementById('demo');
 const dWait=(ms,tok)=>new Promise((res,rej)=>setTimeout(()=>tok===DEMO?res():rej('stopp'),ms));
@@ -3119,7 +3146,7 @@ function frame(now){
   renderer.render(scene,camera);qSample(now);
 }
 setHM(HM,true);renderList();mtopLabels();shopLoad();gAuto();if(ISM)applyQ(0);requestAnimationFrame(t=>{frame(t);document.getElementById('loading').classList.add('done');setTimeout(()=>qStart(performance.now()),1200);});
-window.__tak={gStart,gStop,gShow:i=>{gShow(i);clearInterval(gTimer);},LAGE,get SHOP(){return SHOP;},startDemo,stopDemo,mobPick,setTab,applyQ,Q,renderer,touch,HOUSE,XRG,setHM,KUPA,FLYG,FARS,VL,VF,setWorldVisible,setTrim,setTsv,setSno,setTT,pick,partMeshes,scene,enterDrill,exitDrill,selectComp,select,applyCut,applyExp,setMode,setPan,setTrim,camera,controls,flyTo,VIEWS};
+window.__tak={tipsShow,tipsHide,setFasad,LAGE,get SHOP(){return SHOP;},startDemo,stopDemo,mobPick,setTab,applyQ,Q,renderer,touch,HOUSE,XRG,setHM,KUPA,FLYG,FARS,VL,VF,setWorldVisible,setTrim,setTsv,setSno,setTT,pick,partMeshes,scene,enterDrill,exitDrill,selectComp,select,applyCut,applyExp,setMode,setPan,setTrim,camera,controls,flyTo,VIEWS};
 </script>
 </body>
 </html>
