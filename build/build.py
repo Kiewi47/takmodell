@@ -45,13 +45,20 @@ for rel in ['build/three.module.min.js', 'examples/jsm/controls/OrbitControls.js
 old = '{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}'
 assert old in html, 'importmap hittades inte'
 html = html.replace(old, '{"imports":{"three":"./vendor/three-0.160.0/build/three.module.min.js","three/addons/":"./vendor/three-0.160.0/examples/jsm/"}}')
+# Byggversion: butiksskärmar i kioskläge jämför mot version.json och laddar om när en ny version publicerats
+import json as _json
+bygge = hashlib.sha1(html.encode('utf-8')).hexdigest()[:12]
+html = html.replace('<script type="importmap">', f'<script>window.TAK_BUILD="{bygge}";</script><script type="importmap">', 1)
+open(os.path.join(dist, 'version.json'), 'w').write(_json.dumps({'build': bygge}))
 open(os.path.join(dist, 'index.html'), 'w', encoding='utf-8').write(html)
 
 open(os.path.join(dist, '.htaccess'), 'w').write("""# 3D-takmodellen – cache och komprimering
 <IfModule mod_headers.c>
-  <FilesMatch "\\.(html)$">
+  <FilesMatch "\\.(html|json)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
+  # Modellen får bara bäddas in (iframe) på Taklagrets egna sidor och e-handelns förhandsvisningar
+  Header always set Content-Security-Policy "frame-ancestors 'self' https://taklagret.se https://www.taklagret.se https://shop-sweet-connect.lovable.app https://id-preview--d896781a-8c55-4548-9be3-b7ad2811e3e5.lovable.app"
   <FilesMatch "\\.(webp|jpg|png|js)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>

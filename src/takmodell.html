@@ -168,6 +168,8 @@ body.drill [data-view]{opacity:.85}
 html:not([data-lage="skarm"]) #demo{display:none}
 #mtop .stang.mx{order:9;margin-left:auto;width:44px;height:44px;border:0;border-radius:12px;background:var(--chip);color:var(--ink);display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.12)}
 #mtop .stang.mx[hidden],.stang[hidden]{display:none!important}
+html.kiosk,html.kiosk *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html.kiosk #fs{display:none}
 .shopbox{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px 16px;margin:12px 0 6px}
 .shopbox b{display:block;font-size:17px;margin-bottom:4px}
 .shopbox p{margin:0 0 12px;font-size:15px;line-height:1.45;color:var(--muted)}
@@ -2649,7 +2651,22 @@ function renderList(){
     return `<section class="cat"><h3>${catName(cat)}</h3><div class="plist">${ps.map(([k,v])=>`<button class="part${sel===k?' on':''}" data-p="${k}">${esc(v.name)}</button>`).join('')}</div></section>`;}).join('');
   pbody.querySelectorAll('.part').forEach(b=>b.addEventListener('click',()=>select(b.dataset.p,true)));
 }
-const artSrc=nr=>(nr&&ART[nr])||null;
+/* v29: artikelinfo live från Taksystems artikelregister (prisfritt API). Inbyggd data är reserv:
+   inbyggd bild används i första hand, registrets bild när inbyggd saknas; registrets dokument läggs till delens dokument. */
+const LIVE={},KIOSKQ=LAGE==='skarm'&&/[?&]kiosk=1\b/.test(location.search);
+const LIVEAPI='https://yhglqobvwaspbwdwyttc.supabase.co/functions/v1/artikelinfo-api';
+const DOKTYP={datasheet:'Produktblad',manual:'Monteringsanvisning',certificate:'Certifikat',warranty:'Garanti'};
+async function liveLoad(){try{const nrs=[...new Set(Object.values(P_).flatMap(v=>(v.arts||[]).map(a=>a[0])).filter(n=>n&&/^[A-Za-z0-9-]{1,30}$/.test(n)))];
+  for(let i=0;i<nrs.length;i+=150){const r=await fetch(LIVEAPI+'?nr='+encodeURIComponent(nrs.slice(i,i+150).join(',')),{mode:'cors'});if(!r.ok)continue;
+    const j=await r.json();for(const [nr,x] of Object.entries(j.artiklar||{}))LIVE[nr]={bild:x.bild_url||null,dok:(x.dokument||[]).filter(d=>d&&/^https:\/\//.test(d.url||''))};}
+  if(sel&&P_[sel])renderDetail(sel);}catch(_){/* registret nås inte – inbyggd data gäller */}}
+function docsFor(k){if(KIOSKQ)return [];const v=P_[k],out=[...(v.docs||[])],seen=new Set(out.map(d=>d[2]));
+  const tok=t=>String(t||'').toLowerCase().replace(/\(.*?\)/g,' ').split(/[^a-z0-9åäö]+/).filter(w=>w&&!/^(produktblad|monteringsanvisning|datablad|och)$/.test(w));
+  const finns=(lbl,namn)=>{const nt=new Set(tok(namn));return out.some(d=>{if(d[0]!==lbl)return false;const et=tok(d[1]);return et.length>0&&et.every(w=>nt.has(w));});};
+  for(const a of (v.arts||[]).filter(a=>artOk(k,a)))for(const d of LIVE[a[0]]?.dok||[]){const lbl=DOKTYP[d.typ]||'Dokument';
+    if(seen.has(d.url)||finns(lbl,a[1]))continue;seen.add(d.url);out.push([lbl,a[1]+' ('+a[0]+')',d.url]);}
+  return out;}
+const artSrc=nr=>(nr&&(ART[nr]||LIVE[nr]?.bild))||null;
 const PANP=new Set(['panna','nockpanna']);
 function tagsFor(k){if(TRIMP[k])return [trimOf(TRIMP[k])];if(AVVP.has(k))return [trim.av];if(TT==='betong'&&PANP.has(k))return [panK];return [mode];}
 const artOk=(k,a)=>!a[2]||tagsFor(k).includes(a[2]);
@@ -2674,7 +2691,7 @@ function renderDetail(k){
   <h4>Vad gör den?</h4><p>${esc(v.fun)}</p>
   <h4>Var sitter den?</h4><p>${esc(v.plac)}</p>
   <h4>Passar till</h4><p>${esc(v.anv)}</p>
-  ${relHtml(relFor(k))}${docsHtml(v.docs)}
+  ${relHtml(relFor(k))}${docsHtml(docsFor(k))}
   </article>`;
   pbody.querySelector('.back').addEventListener('click',()=>select(null));pbody.scrollTop=0;
   pbody.querySelector('.artsec')?.addEventListener('toggle',e=>{ARTOPEN=e.currentTarget.open;try{localStorage.setItem('tak.arts',ARTOPEN?'1':'0');}catch(_){}});
@@ -3123,6 +3140,23 @@ window.__dst=()=>({HM,TT,cut:+cutT.toFixed(2),exp:+expE.toFixed(2),panK,sel,dril
 demoBtn.addEventListener('click',e=>{e.stopPropagation();if(DEMO)stopDemo();else startDemo();});
 // all beröring, mus, scroll eller tangent avbryter demon (utom knappen själv)
 for(const ev of ['pointerdown','wheel','keydown'])document.addEventListener(ev,e=>{if(DEMO&&!(e.target.closest&&e.target.closest('#demo')))stopDemo();},{capture:true,passive:true});
+/* ------------------------------------------------------------------ v29: kioskläge för butiksskärm (?kiosk=1)
+   Håller skärmen vaken, startar demo efter 5 min utan beröring, laddar om när en ny version publicerats
+   (kontroll var 10:e min mot version.json) och varje natt kl 03 – alltid bara när ingen rört skärmen på 2 min. */
+const KIOSK=KIOSKQ;
+setTimeout(liveLoad,1500);
+if(KIOSK){document.documentElement.classList.add('kiosk');
+  addEventListener('contextmenu',e=>e.preventDefault());
+  for(const ev of ['pointerdown','wheel','keydown'])document.addEventListener(ev,()=>{last=performance.now();},{capture:true,passive:true});
+  const lasVaken=async()=>{try{if('wakeLock' in navigator&&document.visibilityState==='visible')await navigator.wakeLock.request('screen');}catch(_){}};
+  lasVaken();document.addEventListener('visibilitychange',lasVaken);
+  const BYGGE=window.TAK_BUILD||'';let nyVersion=false;
+  setInterval(async()=>{try{const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});if(r.ok){const v=(await r.json()).build;if(BYGGE&&v&&v!==BYGGE)nyVersion=true;}}catch(_){}},10*60*1000);
+  const nattKl3=(()=>{const n=new Date(),t=new Date(n);t.setHours(3,0,0,0);if(t<=n)t.setDate(t.getDate()+1);return t.getTime();})();
+  setInterval(()=>{const tyst=(performance.now()-last)/1000;
+    if(tyst>300&&!DEMO)startDemo();
+    if((nyVersion||Date.now()>nattKl3)&&tyst>120&&navigator.onLine!==false)location.reload();},15000);
+}
 /* ------------------------------------------------------------------ loop */
 function resize(){mobLayout();const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=MOB&&!LAND?48:34;controls.maxDistance=MOB?70:36;camera.updateProjectionMatrix();setVO();inval();}
 new ResizeObserver(resize).observe(stage);resize();
@@ -3159,7 +3193,7 @@ function frame(now){
   renderer.render(scene,camera);qSample(now);
 }
 setHM(HM,true);renderList();mtopLabels();shopLoad();gAuto();if(ISM)applyQ(0);requestAnimationFrame(t=>{frame(t);document.getElementById('loading').classList.add('done');setTimeout(()=>qStart(performance.now()),1200);});
-window.__tak={tipsShow,tipsHide,setFasad,setKnut,LAGE,get SHOP(){return SHOP;},startDemo,stopDemo,mobPick,setTab,applyQ,Q,renderer,touch,HOUSE,XRG,setHM,KUPA,FLYG,FARS,VL,VF,setWorldVisible,setTrim,setTsv,setSno,setTT,pick,partMeshes,scene,enterDrill,exitDrill,selectComp,select,applyCut,applyExp,setMode,setPan,setTrim,camera,controls,flyTo,VIEWS};
+window.__tak={get KIOSK(){return KIOSK;},tipsShow,tipsHide,setFasad,setKnut,LAGE,get SHOP(){return SHOP;},startDemo,stopDemo,mobPick,setTab,applyQ,Q,renderer,touch,HOUSE,XRG,setHM,KUPA,FLYG,FARS,VL,VF,setWorldVisible,setTrim,setTsv,setSno,setTT,pick,partMeshes,scene,enterDrill,exitDrill,selectComp,select,applyCut,applyExp,setMode,setPan,setTrim,camera,controls,flyTo,VIEWS};
 </script>
 </body>
 </html>
