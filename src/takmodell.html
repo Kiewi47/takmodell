@@ -2666,7 +2666,10 @@ function docsFor(k){if(KIOSKQ)return [];const v=P_[k],out=[...(v.docs||[])],seen
   for(const a of (v.arts||[]).filter(a=>artOk(k,a)))for(const d of LIVE[a[0]]?.dok||[]){const lbl=DOKTYP[d.typ]||'Dokument';
     if(seen.has(d.url)||finns(lbl,a[1]))continue;seen.add(d.url);out.push([lbl,a[1]+' ('+a[0]+')',d.url]);}
   return out;}
-const artSrc=nr=>(nr&&(ART[nr]||LIVE[nr]?.bild))||null;
+// v30: artikelregistret är huvudkälla för bilder (Roger 2026-10-09) – registrets bild först, inbyggd bild som reserv om den saknas eller inte laddar
+const artSrc=nr=>(nr&&(LIVE[nr]?.bild||ART[nr]))||null;
+const fbAttr=(src,fb)=>fb&&fb!==src?` data-fb="${fb}"`:'';
+document.addEventListener('error',e=>{const t=e.target;if(t&&t.tagName==='IMG'&&t.dataset.fb&&t.src!==t.dataset.fb){t.src=t.dataset.fb;t.removeAttribute('data-fb');}},true);
 const PANP=new Set(['panna','nockpanna']);
 function tagsFor(k){if(TRIMP[k])return [trimOf(TRIMP[k])];if(AVVP.has(k))return [trim.av];if(TT==='betong'&&PANP.has(k))return [panK];return [mode];}
 const artOk=(k,a)=>!a[2]||tagsFor(k).includes(a[2]);
@@ -2678,14 +2681,14 @@ function colNote(k){const v=P_[k];
     if(c.lev)return `${c.n} (${c.k}) är inte lagervara hos St Eriks. Leveranstiden är ca 6 veckor enligt produktbladet.`;}
   return '';}
 const stdNr=k=>{const v=P_[k];if(!v)return null;const a=v.arts.find(a=>a[3]&&artOk(k,a))||v.arts.find(a=>artOk(k,a));return a?a[0]:null;};
-const thumb=nr=>{const t=artSrc(nr);return t?`<img class="th" src="${t}" alt="" loading="lazy">`:'';};
+const thumb=nr=>{const t=artSrc(nr);return t?`<img class="th" src="${t}"${fbAttr(t,ART[nr])} alt="" loading="lazy">`:'';};
 const docIcon='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>';
 let ARTOPEN=true;try{ARTOPEN=localStorage.getItem('tak.arts')!=='0';}catch(_){}
 function renderDetail(k){
-  const v=P_[k];ptitle.textContent=catName(v.cat);const ik=v.img[mode]??v.img.s??null;const src=artSrc(stdNr(k))||(ik&&IMG[ik]);
+  const v=P_[k];ptitle.textContent=catName(v.cat);const ik=v.img[mode]??v.img.s??null;const src=artSrc(stdNr(k))||(ik&&IMG[ik]);const srcFb=ART[stdNr(k)]||(ik&&IMG[ik])||'';
   const arts=v.arts.filter(a=>artOk(k,a)),cn=colNote(k);
   pbody.innerHTML=`<button class="back" type="button"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>Alla delar</button>
-  <article class="det"><div class="pic">${src?`<img src="${src}" alt="${esc(v.name)}">`:`<div class="none">Bild saknas för den här artikeln</div>`}</div>
+  <article class="det"><div class="pic">${src?`<img src="${src}"${fbAttr(src,srcFb)} alt="${esc(v.name)}">`:`<div class="none">Bild saknas för den här artikeln</div>`}</div>
   ${k==='snorasskydd'?snoSeg():''}${k==='taksteg'&&!PLAT(TT)?tsSeg():''}<h2>${esc(v.name)}</h2>${shopBox(k)}<details class="artsec"${ARTOPEN?' open':''}><summary><span>Artiklar</span><span class="cnt">${arts.length}</span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>${cn?`<p class="cnote">${esc(cn)}</p>`:''}<ul class="arts">${arts.map(a=>`<li>${thumb(a[0])||'<span class="th none"></span>'}<span class="nr">${esc(a[0])}</span><span class="nm">${esc(a[1])}${a[3]===1?'<span class="badge">Vanligast</span>':''}</span>${shopRow(k,a[0])}</li>`).join('')}</ul></details><p class="kort">${esc(v.kort)}</p>
   ${DRILL_FOR[k]?`<button class="drillbtn" type="button" data-d="${DRILL_FOR[k]}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>${DRILL_FOR[k]==='avvattning'?'Visa hela systemet och dess delar':(getDrill(DRILL_FOR[k]).btn||'Visa delarna i paketet')}</button>`:''}
   <h4>Vad gör den?</h4><p>${esc(v.fun)}</p>
