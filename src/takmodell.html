@@ -1755,7 +1755,12 @@ const interiorTex=ctex(512,512,(g,w,h)=>{const r=rnd(88);
 const glassM=M(null,'glas2',{color:0x6f8791,metalness:.25,roughness:.04,envMapIntensity:1.6,transparent:true,opacity:.42,depthWrite:false});
 const interiorM=M(null,'interior',{color:0xffffff,map:interiorTex,roughness:1,envMapIntensity:.2});
 const TRIMCOL={white:0xf2f1ec,dark:0x2c2f32};
-const trimMat=k=>M(null,'trim_'+k,{color:TRIMCOL[k],roughness:.62,map:grainTex});
+// knutbrädor, foder och vattbrädor: eget material per hus, vitt som standard (går att ändra under Husfärger)
+const KNF=[['vit','Vit','#f2f1ec'],['svart','Svart','#2c2f32'],['gra','Grå','#8a8f92'],['falu','Faluröd','#8a2a1c'],['gul','Gul','#d4ad55']];
+const KNST={en:'vit',tva:'vit',vinkel:'vit'},KNMAT={};
+const trimMat=(k,hm)=>{const m=M(null,'trim_'+k+(hm?'_'+hm:''),{color:hm?new THREE.Color(KNF.find(c=>c[0]===KNST[hm])[2]).getHex():TRIMCOL[k],roughness:.62,map:grainTex});if(hm)(KNMAT[hm]??=[]).push(m);return m;};
+function setKnut(col,hm=HM){KNST[hm]=col;const hex=KNF.find(c=>c[0]===col)[2];for(const m of KNMAT[hm]||[])m.color.set(hex);
+  if(typeof shd==='function')shd();if(typeof inval==='function')inval();if(typeof renderTrimUI==='function'&&!trimp.hidden)renderTrimUI();}
 const sashMat=M(null,'sash',{color:0xf4f3ef,roughness:.5});
 const sillMat=k=>M(null,'sill_'+k,{color:k==='white'?0xe9e9e5:0x2a2c2f,metalness:.35,roughness:.38});
 const sockM=M(null,'sockel2',{color:0x9c9d9b,map:concreteTex,roughness:.95});
@@ -1847,7 +1852,7 @@ function doorGeo(B,F,o){const {u0,u1,y0,y1}=o,cas='trim:'+(o.cas||'white'),cw=0.
 /* ---- husen */
 const YRF=YW+1.8*TN;                 // kupans (frontespisens) nock
 const HWP=1.55,WTP=GYM.tva+2.75,YWP=WTP+RAF/CS,YRP=YWP+HWP*TN;   // farstukvisten
-function houseMats(fk,ck,hm){return {wall:facM(fk,hm),sock:sockM,'trim:white':trimMat('white'),'trim:dark':trimMat('dark'),'sill:white':sillMat('white'),'sill:dark':sillMat('dark'),
+function houseMats(fk,ck,hm){return {wall:facM(fk,hm),sock:sockM,'trim:white':trimMat('white',hm),'trim:dark':trimMat('dark',hm),'sill:white':sillMat('white'),'sill:dark':sillMat('dark'),
   sash:sashMat,glass:glassM,interior:interiorM,door:M(null,'door2',{color:0xf3f2ee,roughness:.48}),metal:metalM,deck:deckM,granite:graniteM,gravel:gravelM}}
 // en fasad: vägg med öppningar, sockel, vattbräda, knutbrädor och alla fönster/dörrar
 // f: {O,R,u0,u1,gy,top, wins:[...], doors:[...], lun:[...], cA,cB, cas}
@@ -2896,10 +2901,11 @@ function renderColUI(){
   else{colg.innerHTML=`<span class="lbl">Takfärg</span><button class="btn" data-col="r" aria-pressed="${mode==='r'}"><span class="sw" style="background:#9c4127"></span>Tegelröd</button><button class="btn" data-col="s" aria-pressed="${mode==='s'}"><span class="sw" style="background:#2a2b2c"></span>Svart</button>`;
     colg.querySelectorAll('[data-col]').forEach(b=>b.addEventListener('click',()=>{setMode(b.dataset.col);touch();}));}}
 const trimb=document.getElementById('trimb'),trimp=document.getElementById('trimp');
-function renderTrimUI(){const [ft,fc]=FACST[HM];trimp.innerHTML=`<h3>Hus- och detaljfärger</h3><div class="row"><span>Fasad</span><div class="seg fseg">${[['tra','Trä'],['tegel','Tegel']].map(([k,n])=>`<button type="button" data-ft="${k}" aria-pressed="${ft===k}">${n}</button>`).join('')}</div></div><div class="row"><span>Husfärg</span>${FASF[ft].map(([k,n,h])=>`<button class="swb" type="button" data-fc="${k}" aria-pressed="${fc===k}" aria-label="Husfärg: ${n}" title="${n}"><span style="background:${h}"></span></button>`).join('')}<em>${FASF[ft].find(c=>c[0]===fc)[1]}</em></div><hr class="tsep">${TRIMN.map(([s,n])=>`<div class="row"><span>${n}</span>${Object.entries(palOf(s)).map(([c,t])=>`<button class="swb" type="button" data-ts="${s}" data-tc="${c}" aria-pressed="${trimOf(s)===c}" aria-label="${n}: ${t.n}" title="${t.n}"><span style="background:${c==='silver'?'linear-gradient(135deg,#d9dcdf,#8e9296 55%,#c4c7ca)':cssHex(t.hex)}"></span></button>`).join('')}<em>${palOf(s)[trimOf(s)].n}${trim[s]?'':' (följer taket)'}</em></div>`).join('')}`;
+function renderTrimUI(){const [ft,fc]=FACST[HM];trimp.innerHTML=`<h3>Hus- och detaljfärger</h3><div class="row"><span>Fasad</span><div class="seg fseg">${[['tra','Trä'],['tegel','Tegel']].map(([k,n])=>`<button type="button" data-ft="${k}" aria-pressed="${ft===k}">${n}</button>`).join('')}</div></div><div class="row"><span>Husfärg</span>${FASF[ft].map(([k,n,h])=>`<button class="swb" type="button" data-fc="${k}" aria-pressed="${fc===k}" aria-label="Husfärg: ${n}" title="${n}"><span style="background:${h}"></span></button>`).join('')}<em>${FASF[ft].find(c=>c[0]===fc)[1]}</em></div><div class="row"><span>Knutbrädor och foder</span>${KNF.map(([k,n,h])=>`<button class="swb" type="button" data-kc="${k}" aria-pressed="${KNST[HM]===k}" aria-label="Knutbrädor och foder: ${n}" title="${n}"><span style="background:${h}"></span></button>`).join('')}<em>${KNF.find(c=>c[0]===KNST[HM])[1]}</em></div><hr class="tsep">${TRIMN.map(([s,n])=>`<div class="row"><span>${n}</span>${Object.entries(palOf(s)).map(([c,t])=>`<button class="swb" type="button" data-ts="${s}" data-tc="${c}" aria-pressed="${trimOf(s)===c}" aria-label="${n}: ${t.n}" title="${t.n}"><span style="background:${c==='silver'?'linear-gradient(135deg,#d9dcdf,#8e9296 55%,#c4c7ca)':cssHex(t.hex)}"></span></button>`).join('')}<em>${palOf(s)[trimOf(s)].n}${trim[s]?'':' (följer taket)'}</em></div>`).join('')}`;
   trimp.querySelectorAll('[data-ts]').forEach(b=>b.addEventListener('click',()=>{setTrim(b.dataset.ts,b.dataset.tc);touch();}));
   trimp.querySelectorAll('[data-ft]').forEach(b=>b.addEventListener('click',()=>{setFasad(b.dataset.ft,FACST[HM][1]);touch();}));
-  trimp.querySelectorAll('[data-fc]').forEach(b=>b.addEventListener('click',()=>{setFasad(FACST[HM][0],b.dataset.fc);touch();}));}
+  trimp.querySelectorAll('[data-fc]').forEach(b=>b.addEventListener('click',()=>{setFasad(FACST[HM][0],b.dataset.fc);touch();}));
+  trimp.querySelectorAll('[data-kc]').forEach(b=>b.addEventListener('click',()=>{setKnut(b.dataset.kc);touch();}));}
 trimb.addEventListener('click',e=>{e.stopPropagation();const o=trimp.hidden;trimp.style.bottom=(document.getElementById('bar').offsetHeight+30)+'px';trimp.hidden=!o;trimb.setAttribute('aria-expanded',o);if(o)renderTrimUI();touch();});
 document.addEventListener('pointerdown',e=>{if(!MOB&&!trimp.hidden&&!trimp.contains(e.target)&&e.target!==trimb&&!trimb.contains(e.target)){trimp.hidden=true;trimb.setAttribute('aria-expanded','false');}});
 renderColUI();applyColors();
@@ -3045,7 +3051,7 @@ var TIPS_D=[
   {s:'.ttg',p:['right','below'],t:'Byt taktyp',x:'Betong, lertegel eller plåt.'},
   {s:'#hmg',p:['right','below'],t:'Byt husmodell',x:'Enplan, tvåplan eller vinkelhus.'},
   {s:'#colg',t:'Ändra takfärg',x:'Se taket i olika kulörer.'},
-  {s:'#trimb',t:'Husfärger',x:'Fasad i trä eller tegel, husfärg och detaljer.'},
+  {s:'#trimb',t:'Husfärger',x:'Fasad i trä eller tegel, husfärg, knutbrädor och detaljer.'},
   {s:'#cut',t:'Visa skikten',x:'Se lagren under pannorna.'},
   {s:'#exp',p:['right','above'],t:'Lyft isär',x:'Se taket lager för lager.'}];
 var TIPS_M=[
@@ -3146,7 +3152,7 @@ function frame(now){
   renderer.render(scene,camera);qSample(now);
 }
 setHM(HM,true);renderList();mtopLabels();shopLoad();gAuto();if(ISM)applyQ(0);requestAnimationFrame(t=>{frame(t);document.getElementById('loading').classList.add('done');setTimeout(()=>qStart(performance.now()),1200);});
-window.__tak={tipsShow,tipsHide,setFasad,LAGE,get SHOP(){return SHOP;},startDemo,stopDemo,mobPick,setTab,applyQ,Q,renderer,touch,HOUSE,XRG,setHM,KUPA,FLYG,FARS,VL,VF,setWorldVisible,setTrim,setTsv,setSno,setTT,pick,partMeshes,scene,enterDrill,exitDrill,selectComp,select,applyCut,applyExp,setMode,setPan,setTrim,camera,controls,flyTo,VIEWS};
+window.__tak={tipsShow,tipsHide,setFasad,setKnut,LAGE,get SHOP(){return SHOP;},startDemo,stopDemo,mobPick,setTab,applyQ,Q,renderer,touch,HOUSE,XRG,setHM,KUPA,FLYG,FARS,VL,VF,setWorldVisible,setTrim,setTsv,setSno,setTT,pick,partMeshes,scene,enterDrill,exitDrill,selectComp,select,applyCut,applyExp,setMode,setPan,setTrim,camera,controls,flyTo,VIEWS};
 </script>
 </body>
 </html>
