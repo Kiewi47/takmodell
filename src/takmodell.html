@@ -142,6 +142,24 @@ body.drill [data-view]{opacity:.85}
 #loading.done{opacity:0;pointer-events:none}
 /* ---- mobil (body.mob sätts av skriptet för smala skärmar och telefoner) */
 #mtabs,#mtop,#grab,#pclose{display:none}
+#guide{position:fixed;inset:0;z-index:90;pointer-events:none}
+#guide[hidden]{display:none}
+#guide .g-ring{position:fixed;border:3px solid var(--signal);border-radius:14px;box-shadow:0 0 0 9999px rgba(10,16,20,.28),0 0 24px rgba(242,183,5,.55);transition:left .55s cubic-bezier(.3,.9,.3,1),top .55s cubic-bezier(.3,.9,.3,1),width .55s cubic-bezier(.3,.9,.3,1),height .55s cubic-bezier(.3,.9,.3,1)}
+#guide .g-arrow{position:fixed;color:var(--signal);filter:drop-shadow(0 3px 6px rgba(0,0,0,.35));transition:left .55s cubic-bezier(.3,.9,.3,1),top .55s cubic-bezier(.3,.9,.3,1)}
+#guide .g-arrow svg{display:block;animation:gbob 1.1s ease-in-out infinite}
+#guide .g-arrow.up svg{transform:rotate(180deg);animation-name:gbobu}
+@keyframes gbob{0%,100%{transform:translateY(-6px)}50%{transform:translateY(5px)}}
+@keyframes gbobu{0%,100%{transform:rotate(180deg) translateY(-6px)}50%{transform:rotate(180deg) translateY(5px)}}
+#guide .g-bub{position:fixed;width:min(320px,calc(100vw - 24px));background:var(--card);color:var(--ink);border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.3);padding:16px 18px 14px;pointer-events:auto;transition:left .55s cubic-bezier(.3,.9,.3,1),top .55s cubic-bezier(.3,.9,.3,1),opacity .3s}
+#guide .g-step{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+#guide .g-t{display:block;font-family:var(--font-cond);font-size:22px;margin:2px 0 4px}
+#guide .g-x{margin:0 0 12px;font-size:15px;line-height:1.45;color:var(--muted)}
+#guide .g-act{display:flex;gap:8px;justify-content:flex-end}
+#guide .g-act button{min-height:42px;padding:8px 16px;border-radius:10px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink)}
+#guide .g-act .g-next{background:var(--slate);border-color:var(--slate);color:var(--panel)}
+#guide .g-prog{height:3px;background:var(--line);border-radius:2px;margin-top:12px;overflow:hidden}
+#guide .g-prog i{display:block;height:100%;width:0;background:var(--signal)}
+@media (prefers-reduced-motion:reduce){#guide .g-arrow svg{animation:none}#guide .g-ring,#guide .g-arrow,#guide .g-bub{transition:none}}
 html:not([data-lage="skarm"]) #demo{display:none}
 #mtop .stang.mx{order:9;margin-left:auto;width:44px;height:44px;border:0;border-radius:12px;background:var(--chip);color:var(--ink);display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.12)}
 #mtop .stang.mx[hidden],.stang[hidden]{display:none!important}
@@ -263,7 +281,7 @@ body.mob.land #mtop button{min-height:40px}
       <div class="grp" id="colg" role="group" aria-label="Takfärg"></div>
       <div class="grp"><button class="btn" id="trimb" type="button" aria-expanded="false" aria-controls="trimp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="8" cy="8" r="3.2"/><circle cx="16" cy="8" r="3.2"/><circle cx="12" cy="15.5" r="3.2"/></svg>Detaljfärger</button></div>
       <div class="grp">
-        <label class="rng"><span class="lbl">Visa skikten</span><input id="cut" type="range" min="0" max="100" value="0" aria-label="Visa skikten under pannorna"></label>
+        <label class="rng"><span class="lbl">Visa skikten</span><input id="cut" type="range" min="0" max="100" value="50" aria-label="Visa skikten under pannorna"></label>
         <label class="rng"><span class="lbl">Lyft isär</span><input id="exp" type="range" min="0" max="100" value="0" aria-label="Lyft isär skikten"></label>
       </div>
     </div>
@@ -279,11 +297,13 @@ body.mob.land #mtop button{min-height:40px}
         <button class="btn stang" type="button" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Stäng</span></button>
         <button class="btn" id="demo" type="button" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg><span>Demoläge</span></button>
         <button class="btn" id="dots" aria-pressed="true">Visa punkter</button>
+        <button class="btn" id="guideb" type="button">Visa guiden</button>
         <button class="btn" id="fs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Helskärm</button>
       </div>
     </div>
     <div id="trimp" hidden></div>
-    <nav id="mtabs" aria-label="Meny"><button type="button" data-mt="delar" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Delar</button><button type="button" data-mt="farg" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3.2"/><circle cx="16" cy="8" r="3.2"/><circle cx="12" cy="15.5" r="3.2"/></svg>Färger</button><button type="button" data-mt="vyer" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg>Vyer</button><button type="button" data-mt="skikt" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>Skikt</button></nav>
+    <div id="guide" hidden><div class="g-ring"></div><div class="g-arrow"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M5.5 12.5L12 19l6.5-6.5"/></svg></div><div class="g-bub" role="dialog" aria-live="polite"><div class="g-step"></div><b class="g-t"></b><p class="g-x"></p><div class="g-act"><button type="button" class="g-skip">Hoppa över</button><button type="button" class="g-next">Nästa</button></div><div class="g-prog"><i></i></div></div></div>
+<nav id="mtabs" aria-label="Meny"><button type="button" data-mt="delar" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Delar</button><button type="button" data-mt="farg" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3.2"/><circle cx="16" cy="8" r="3.2"/><circle cx="12" cy="15.5" r="3.2"/></svg>Färger</button><button type="button" data-mt="vyer" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg>Vyer</button><button type="button" data-mt="skikt" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>Skikt</button></nav>
     <div id="loading">Bygger taket …</div>
   </div>
   <aside id="panel" aria-live="polite">
@@ -774,8 +794,9 @@ const grassTex2=ctex(512,512,(g,w,h)=>{g.fillStyle='#5b8636';g.fillRect(0,0,w,h)
   g.globalAlpha=1;for(let k=0;k<90;k++){g.fillStyle=r()<.6?'#f2efd8':'#e8d34a';g.beginPath();g.arc(r()*w,r()*h,0.9+r()*0.8,0,7);g.fill();}},{rep:[75,75]});
 
 /* ------------------------------------------------------------------ material och register */
-const planes={pan:new THREE.Plane(new THREE.Vector3(-1,0,0),99),bar:new THREE.Plane(new THREE.Vector3(-1,0,0),99),
-  stro:new THREE.Plane(new THREE.Vector3(-1,0,0),99),papp:new THREE.Plane(new THREE.Vector3(-1,0,0),99),rasp:new THREE.Plane(new THREE.Vector3(-1,0,0),99)};
+// skikten klipps från vänstra gaveln: skorsten, genomföringar och taksäkerhet sitter på högra halvan och syns alltid
+const planes={pan:new THREE.Plane(new THREE.Vector3(1,0,0),99),bar:new THREE.Plane(new THREE.Vector3(1,0,0),99),
+  stro:new THREE.Plane(new THREE.Vector3(1,0,0),99),papp:new THREE.Plane(new THREE.Vector3(1,0,0),99),rasp:new THREE.Plane(new THREE.Vector3(1,0,0),99)};
 const partMats={}, partMeshes={}, roles=[], pick=[], matCache=new Map();
 function M(part,key,opts,{layer=null,role=null}={}){
   const ck=part+'|'+key; if(matCache.has(ck)) return matCache.get(ck);
@@ -1156,7 +1177,7 @@ const wallMat=(k,rx,ry)=>{const map=FW.map.clone();map.repeat.set(rx,ry);map.nee
 
 /* ------------------------------------------------------------------ takfallen */
 const sides=[];const pGeo=mjobackGeo();const pGeoLo=mjobackGeo(0.022);const nGeo=nockGeo();   // pGeoLo: samma panna med glesare profil för långt avstånd
-const chim={x0:1.3,x1:1.9,z0:0.37,z1:0.97};const VENT={x:-2.2,z:1.40};const chimL={z0:chim.z0/CS,z1:chim.z1/CS};
+const chim={x0:1.3,x1:1.9,z0:0.37,z1:0.97};const VENT={x:0.4,z:1.15};const chimL={z0:chim.z0/CS,z1:chim.z1/CS};
 const TXS=(()=>{const a=[-L/2+0.05];for(let x=-L/2+1.2;x<L/2-0.4;x+=1.2)a.push(+x.toFixed(3));a.push(L/2-0.05);return a;})();
 const nRows=15;const zb0=0.07,zbN=S-0.33;const LA=(zbN-zb0)/(nRows-1);const zbs=[...Array(nRows)].map((_,i)=>zb0+i*LA);
 const tilt=Math.atan(0.028/0.42);
@@ -2381,10 +2402,10 @@ const OVR={betong:{},
    plac:'I en rad längs nocken. Enligt Randers fästs varje nockpanna med ett rostfritt nockpannebeslag som skruvas med två specialskruvar.',
    anv:'Lertegeltak med Randers Höjslev. Takskolan räknar nock × 3 + valm × 3,5 + 4.',
    arts:[['602220','Randers nock Höjslev lera, T-röd','r',1],['602320','Nockpanna Höjslev lertegel, svart','s',1]],docs:[['Läggningsanvisning','Højslev ofalsat taktegel (Randers)',RAND]]},
-  underlag:{name:'Underlagstäckning UV 1800',kort:'En kraftig takpapp i rullar om 1 × 12 m som är takets tätskikt under lertegelpannorna.',
+  underlag:{name:'Underlagstäckning (takpapp)',kort:'Takpapp som är takets tätskikt under lertegelpannorna. Förvald är UV 700, och UV 1800 finns som kraftigare alternativ.',
    fun:'Pannorna är takets ytskikt, men regn och snö kan blåsa in under dem. Underlagstäckningen leder det vattnet ner till takfoten i stället för in i huset. UV 1800 tål att ligga öppen i upp till 12 månader och har tunnare klisterkanter så att skarvarna syns mindre.',
-   anv:'Takskolans standardval under lertegel. Takskolan räknar takyta ÷ 10,8 och avrundar alltid uppåt till hel rulle.',
-   arts:[['10-192800','UV 1800 underlagstäckning dubbel kk',null,1]],docs:[['Monteringsanvisning','UV 1800','https://www.tjb.se/dokumentation/monteringsanvisning-uv-1800']]},
+   anv:'Lertegeltak. Förvald duk är UV 700 (25 m² per rulle). UV 1800 (1 × 12 m) är ett kraftigare alternativ.',
+   arts:[['10-192570','UV 700 25 m² underlagstäckning dubbel kk',null,1],['10-192800','UV 1800 underlagstäckning dubbel kk',null,0]],docs:[['Monteringsanvisning','UV 1800','https://www.tjb.se/dokumentation/monteringsanvisning-uv-1800']]},
   taksteg:{name:'Taksteg för lertegel',img:{},kort:'Ett stålsteg som hakas fast i pannraden och ger ett säkert fotsteg på lertegeltak.',
    anv:'Lertegeltak på 25 mm läkt. TJB anger att stegen är godkända upp till 4 m fasadhöjd och 45° taklutning.',
    arts:[['10-212530','TJB taksteg 25 mm läkt, 2-kupigt lertegel, T-röd',null,1],['10-202530','TJB taksteg lertegel 1-kupiga, T-röd',null]],
@@ -2557,8 +2578,8 @@ const HS=[
   {p:'takstege',pos:()=>lw(4.5,Y4+0.18,3.1),n:NF},
   {p:'snorasskydd',pos:()=>lw(2.85,Y4+0.26,S-1.15),n:NF},
   {p:'glidskydd',pos:()=>new THREE.Vector3(5.13,YE-0.33,ZE+0.26),n:new THREE.Vector3(0,0,1)},
-  {p:'panna',pos:()=>lw(-1.2,Y4+0.1,1.9),n:NF},
-  {p:'nockpanna',pos:()=>new THREE.Vector3(-1.4,YR+0.2,0),n:new THREE.Vector3(0,1,0.2)},
+  {p:'panna',pos:()=>lw(1.7,Y4+0.1,2.05),n:NF},
+  {p:'nockpanna',pos:()=>new THREE.Vector3(-0.3,YR+0.2,0),n:new THREE.Vector3(0,1,0.2)},
   {p:'underbeslag',pos:()=>lw(chim.x1+0.07,Y4+0.07,(chimL.z0+chimL.z1)/2),n:NF},
   {p:'nedrebeslag',pos:()=>lw(1.6,Y4+0.1,chimL.z1+0.16),n:NF},
   {p:'venthuv',pos:()=>{const v=lw(VENT.x,Y4+0.06,VENT.z);v.y+=0.62;return v;},n:NF},
@@ -2573,9 +2594,9 @@ const HS=[
   {p:'taklucka',pos:()=>{const v=lw(LUCKA.xc,Y4+0.2,(LUCKA.z0+LUCKA.z1)/2);v.x=-v.x;v.z=-v.z;return v;},n:new THREE.Vector3(0,CS,-SN)},
   {p:'skyddsracke',pos:()=>{const v=lw(LUCKA.xc+0.66,Y4+0.62,LUCKA.z1+0.2);v.x=-v.x;v.z=-v.z;return v;},n:new THREE.Vector3(0,CS,-SN)},
   {p:'ranndal',hm:['tva','vinkel'],pos:()=>valleyHS(),n:VL.nb.clone()},
-  {p:'lakt',cut:true,pos:()=>lw(cutC.pan+0.9,Y4,2.6),n:NF},
-  {p:'underlag',cut:true,pos:()=>lw(cutC.pan+2.5,Y2,2.0),n:NF},
-  {p:'raspont',cut:true,pos:()=>lw(cutC.pan+3.5,Y1,3.0),n:NF},
+  {p:'lakt',cut:true,pos:()=>lw(-(cutC.pan+0.9),Y4,2.6),n:NF},
+  {p:'underlag',cut:true,pos:()=>lw(-(cutC.pan+2.5),Y2,2.0),n:NF},
+  {p:'raspont',cut:true,pos:()=>lw(-(cutC.pan+3.5),Y1,3.0),n:NF},
 ];
 for(const h of HS){const b=document.createElement('button');b.className='hs pulse';b.type='button';b.setAttribute('aria-label',P_[h.p].name);b.innerHTML=`<span class="tag">${P_[h.p].name}</span>`;
   b.addEventListener('click',e=>{e.stopPropagation();select(h.p,true);});hsWrap.appendChild(b);h.el=b;}
@@ -2587,7 +2608,8 @@ function applyCut(t){cutT=t;shd();const c=XR+0.12-t*CUTSPAN;cutC.pan=c;planes.pa
   if(t<=0.001)for(const k in planes)planes[k].constant=99;}
 function applyExp(e){expE=e;shd();for(const sd of sides){const o={rasp:0,papp:1,stro:2,bar:3,pan:4};for(const k in o)sd.Ly[k].position.y=o[k]*e;sd.outerPan.position.copy(new THREE.Vector3(0,CS,SN).multiplyScalar(4*e));}
   sides.nock.position.y=4*e/CS;hmExp(e);}
-applyCut(0);
+const CUT0=0.5;   // Visa skikten står på ca 50 % från start
+applyCut(CUT0);
 
 /* ------------------------------------------------------------------ panel */
 const pbody=document.getElementById('pbody'),ptitle=document.getElementById('ptitle');
@@ -2646,7 +2668,7 @@ function focusPart(k){
   if(box.isEmpty()&&!v.reveal)return;
   let c=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3()).length();
   if(v.reveal){const t=v.reveal;const cc=XR+0.12-t*CUTSPAN;const bx=v.gable?XR:Math.min(XR-0.3,cc+(v.band??1));
-    const zl=v.ridge?0.05:v.eave?S-0.25:2.4;c=lw(bx,Y2,zl);size=v.ridge||v.eave?2.2:3.2;}
+    const zl=v.ridge?0.05:v.eave?S-0.25:2.4;c=lw(-bx,Y2,zl);size=v.ridge||v.eave?2.2:3.2;}
   const d=THREE.MathUtils.clamp(size*1.15+1.2,2.4,17);
   const dir=new THREE.Vector3(...(v.dir||[0.4,0.6,1])).normalize();
   flyTo(c,c.clone().add(dir.multiplyScalar(d)));
@@ -2657,7 +2679,7 @@ function select(k,focus=false){if(MOB&&k)setTab('delar','peek');setTimeout(()=>c
   for(const h of HS)h.el.classList.toggle('on',h.p===k);
   if(!k){renderList();return;}
   setHighlight(k,true);renderDetail(k);
-  const v=P_[k];if(v.reveal)tweenCut(v.reveal);else if(cutT>0.02&&['panna','nockpanna','takstege','takbrygga','snorasskydd','glidskydd','taksteg','vindskivebeslag','gummistos','venthuv','nedrebeslag','underbeslag','nockracke','taklucka','skyddsracke','farmarskruv','startnock','slutnock'].includes(k))tweenCut(0);
+  const v=P_[k];if(v.reveal)tweenCut(v.reveal);
   if(focus)focusPart(k);
   touch();
 }
@@ -2885,7 +2907,7 @@ controls.addEventListener('start',()=>{tw=null;touch();if(MOB)closePM();});
 /* ------------------------------------------------------------------ viloläge (butik) */
 let last=performance.now();function touch(){last=performance.now();controls.autoRotate=false;}
 function idle(now){if((window.__tak&&window.__tak.noIdle)||MOB||DEMO||!LC.idle)return;const s=(now-last)/1000;if(s>60&&!reduce)controls.autoRotate=true;
-  if(s>180){exitDrill(true);select(null);setMode('r');cutEl.value=0;expEl.value=0;applyCut(0);applyExp(0);const [p,t]=VIEWS.hem;flyTo(new THREE.Vector3(...t),new THREE.Vector3(...p),1600);last=now-61000;}}
+  if(s>180){exitDrill(true);select(null);setMode('r');cutEl.value=CUT0*100;expEl.value=0;applyCut(CUT0);applyExp(0);const [p,t]=VIEWS.hem;flyTo(new THREE.Vector3(...t),new THREE.Vector3(...p),1600);last=now-61000;}}
 
 /* ================================================================== v16: mobil, rendering vid behov, kvalitetsanpassning och avståndsdetalj för pannor */
 // pannor: full profil nära, glesare profil på avstånd (syns inte på håll, halverar antalet trianglar)
@@ -2999,13 +3021,42 @@ tmp.copy(ctaP()).project(camera);if(tmp.z>1){shopCta.style.opacity=0;return;}
   // ovanför punkten, eller under den om rutan annars hamnar över reglagen upptill
   const above=py-22-h>=top;let y=above?py-22:Math.max(py+22,top-6);y=Math.max(above?h+8:8,Math.min(r.height-(above?8:h+8),y));
   shopCta.style.opacity=1;shopCta.style.transform=`translate(${x}px,${y}px) translate(-50%,${above?'-100%':'0'})`;}
+/* ---- guide: en animerad pil visar förstagångsbesökare funktionerna (en gång per webbläsare, kan visas igen med knappen) */
+var GSTEG=[
+  {d:'#cut',m:'[data-mt="skikt"]',t:'Visa skikten',x:'Dra reglaget och se lagren under pannorna: läkt, underlagstäckning och råspont.'},
+  {d:'#exp',m:'[data-mt="skikt"]',t:'Lyft isär',x:'Lyft isär skikten och se hur taket är uppbyggt, lager för lager.'},
+  {d:'.ttg',m:'#mtt',t:'Byt taktyp',x:'Välj betongpannor, lertegel eller plåt.'},
+  {d:'#hmg',m:'#mhm',t:'Byt husmodell',x:'Prova enplanshus, tvåplanshus med kupa eller vinkelhus.'},
+  {d:'#colg',m:'[data-mt="farg"]',t:'Ändra färger',x:'Välj takets färg och se resultatet direkt.'},
+  {d:'#trimb',m:'[data-mt="farg"]',t:'Ändra detaljfärger',x:'Byt färg på vindskivor, plåtdetaljer och takavvattning.'}];
+var GI=-1,gTimer=null,gT0=0;const GEL=document.getElementById('guide'),GDUR=6500;
+function gTarget(i){const st=GSTEG[i];const el=document.querySelector(MOB?st.m:st.d);return el&&(el.closest('.rng')||el);}
+function gPlace(){if(GI<0)return;const el=gTarget(GI);if(!el){gNext();return;}const r=el.getBoundingClientRect(),pad=6;
+  const ring=GEL.querySelector('.g-ring'),arr=GEL.querySelector('.g-arrow'),bub=GEL.querySelector('.g-bub');
+  Object.assign(ring.style,{left:(r.left-pad)+'px',top:(r.top-pad)+'px',width:(r.width+pad*2)+'px',height:(r.height+pad*2)+'px'});
+  const below=r.top+r.height/2<innerHeight/2,bw=bub.offsetWidth,bh=bub.offsetHeight,cx=r.left+r.width/2;
+  const ay=below?r.bottom+pad+4:r.top-pad-50,by=below?ay+50:ay-bh+4;
+  arr.classList.toggle('up',below);arr.style.left=(cx-23)+'px';arr.style.top=ay+'px';
+  bub.style.left=Math.max(12,Math.min(innerWidth-bw-12,cx-bw/2))+'px';bub.style.top=Math.max(12,Math.min(innerHeight-bh-12,by))+'px';}
+function gShow(i){GI=i;const st=GSTEG[i];GEL.querySelector('.g-step').textContent=`Steg ${i+1} av ${GSTEG.length}`;GEL.querySelector('.g-t').textContent=st.t;GEL.querySelector('.g-x').textContent=st.x;
+  GEL.querySelector('.g-next').textContent=i===GSTEG.length-1?'Klart':'Nästa';gPlace();requestAnimationFrame(gPlace);
+  // räkna bara aktiv tid (högst 100 ms per tick), så att ett segt ögonblick aldrig hoppar över steg
+  clearInterval(gTimer);let acc=0,lt=performance.now();const bar=GEL.querySelector('.g-prog i');bar.style.width='0';gTimer=setInterval(()=>{const n=performance.now();acc+=Math.min(100,n-lt);lt=n;const k=acc/GDUR;bar.style.width=Math.min(100,k*100)+'%';if(k>=1)gNext();},60);}
+function gNext(){if(GI+1<GSTEG.length)gShow(GI+1);else gStop();}
+function gStop(){clearInterval(gTimer);GI=-1;GEL.hidden=true;try{localStorage.setItem('tak.guide','1');}catch(_){}}
+function gStart(){if(DEMO)return;if(MOB)setTab(null);GEL.hidden=false;gShow(0);}
+GEL.querySelector('.g-next').addEventListener('click',e=>{e.stopPropagation();gNext();});
+GEL.querySelector('.g-skip').addEventListener('click',e=>{e.stopPropagation();gStop();});
+document.getElementById('guideb').addEventListener('click',e=>{e.stopPropagation();if(MOB)setTab(null);gStart();});
+addEventListener('resize',()=>{if(GI>=0)gPlace();});
+function gAuto(){let seen=false;try{seen=localStorage.getItem('tak.guide')==='1';}catch(_){}if(!seen&&LAGE!=='skarm'&&!/[?&]nog\b/.test(location.search))setTimeout(()=>{if(!DEMO&&GI<0)gStart();},1600);}
 /* ---- demoläge: en slinga som visar modellen av sig själv tills någon rör skärmen */
 var DEMO=0,DEMOI=0;const demoBtn=document.getElementById('demo');
 const dWait=(ms,tok)=>new Promise((res,rej)=>setTimeout(()=>tok===DEMO?res():rej('stopp'),ms));
 function dExp(to,dur,tok){return new Promise(res=>{const from=expE,t0=performance.now();const st=()=>{if(tok!==DEMO)return res();const k=Math.min(1,(performance.now()-t0)/dur),v=from+(to-from)*ease(k);applyExp(v);expEl.value=Math.round(v*100);inval();if(k<1)requestAnimationFrame(st);else res();};st();});}
 const dRot=on=>{controls.autoRotateSpeed=0.85;controls.autoRotate=on;inval();};
 function dHem(ms=1700){const [p,t]=VIEWS.hem;flyTo(V3(...t),V3(...p),ms);}
-function dClean(){if(drillKey)exitDrill(true);if(sel)select(null);cutTw=null;applyCut(0);cutEl.value=0;applyExp(0);expEl.value=0;}
+function dClean(){if(drillKey)exitDrill(true);if(sel)select(null);cutTw=null;applyCut(CUT0);cutEl.value=CUT0*100;applyExp(0);expEl.value=0;}
 async function demoLoop(tok){
   const HMO=['en','tva','vinkel'];
   while(tok===DEMO){
@@ -3015,7 +3066,7 @@ async function demoLoop(tok){
     // 2. visa skikten ca 60 %
     tweenCut(0.6);await dWait(5000,tok);
     // 3. lyft isär taket
-    await dExp(0.55,1600,tok);await dWait(4500,tok);await dExp(0,1200,tok);tweenCut(0);await dWait(1600,tok);
+    await dExp(0.55,1600,tok);await dWait(4500,tok);await dExp(0,1200,tok);tweenCut(CUT0);await dWait(1600,tok);
     // 4. färgbyte på betongpannorna: tegelröd och svart
     for(const k of ['MP401','MP405','MP401','MP405']){setPan(k);await dWait(2600,tok);}
     // 5. takavvattning: välj hängrännan, visa systemet och tryck på en detalj
@@ -3060,15 +3111,15 @@ function frame(now){
   ctaPlace();if(!MOB)hsOcc(now);const hsTaken=[];
   for(const h of HS){const p=h.pos();let vis=!MOB&&!drillKey&&dotsOn&&!h.occ&&!isHidden(h.p)&&(!h.hm||h.hm.includes(HM))&&(!h.cut||cutT>0.25)&&(!sel||h.p===sel);
     if(vis){tmp.copy(camera.position).sub(p);if(tmp.dot(h.n)<0)vis=false;}
-    const L=P_[h.p];if(vis&&!h.cut){const lay=(partMeshes[h.p]||[])[0]?.userData.layer;if(lay&&planes[lay].constant<90&&p.x>planes[lay].constant)vis=false;}
+    const L=P_[h.p];if(vis&&!h.cut){const lay=(partMeshes[h.p]||[])[0]?.userData.layer;if(lay&&planes[lay].constant<90&&-p.x>planes[lay].constant)vis=false;}
     tmp.copy(p).project(camera);if(tmp.z>1||Math.abs(tmp.x)>1.02||Math.abs(tmp.y)>1.02)vis=false;
     if(vis&&MOB&&h.p!==sel){const px=(tmp.x*.5+.5)*r.width,py=(-tmp.y*.5+.5)*r.height;if(hsTaken.some(([a,b])=>Math.hypot(a-px,b-py)<38))vis=false;else hsTaken.push([px,py]);}
     h.el.classList.toggle('off',!vis);if(vis){h.el.style.transform=`translate(${(tmp.x*.5+.5)*r.width}px,${(-tmp.y*.5+.5)*r.height}px)${h.p===sel?' scale(1.15)':''}`;}}
   if(SHD>0){renderer.shadowMap.needsUpdate=true;SHD--;}
   renderer.render(scene,camera);qSample(now);
 }
-setHM(HM,true);renderList();mtopLabels();shopLoad();if(ISM)applyQ(0);requestAnimationFrame(t=>{frame(t);document.getElementById('loading').classList.add('done');setTimeout(()=>qStart(performance.now()),1200);});
-window.__tak={LAGE,get SHOP(){return SHOP;},startDemo,stopDemo,mobPick,setTab,applyQ,Q,renderer,touch,HOUSE,XRG,setHM,KUPA,FLYG,FARS,VL,VF,setWorldVisible,setTrim,setTsv,setSno,setTT,pick,partMeshes,scene,enterDrill,exitDrill,selectComp,select,applyCut,applyExp,setMode,setPan,setTrim,camera,controls,flyTo,VIEWS};
+setHM(HM,true);renderList();mtopLabels();shopLoad();gAuto();if(ISM)applyQ(0);requestAnimationFrame(t=>{frame(t);document.getElementById('loading').classList.add('done');setTimeout(()=>qStart(performance.now()),1200);});
+window.__tak={gStart,gStop,gShow:i=>{gShow(i);clearInterval(gTimer);},LAGE,get SHOP(){return SHOP;},startDemo,stopDemo,mobPick,setTab,applyQ,Q,renderer,touch,HOUSE,XRG,setHM,KUPA,FLYG,FARS,VL,VF,setWorldVisible,setTrim,setTsv,setSno,setTT,pick,partMeshes,scene,enterDrill,exitDrill,selectComp,select,applyCut,applyExp,setMode,setPan,setTrim,camera,controls,flyTo,VIEWS};
 </script>
 </body>
 </html>
