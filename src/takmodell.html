@@ -2967,6 +2967,21 @@ renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;const moved
   const hits=ray.intersectObjects(pick,false).filter(h=>{if(!h.object.visible||!visUp(h.object))return false;const cp=h.object.material.clippingPlanes;return !(cp&&cp.some(p=>p.distanceToPoint(h.point)<-0.004));});
   const h=hits[0];if(h&&h.object.userData.part)select(h.object.userData.part,false);});
 controls.addEventListener('start',()=>{tw=null;touch();if(MOB)closePM();});
+// zoom med mushjul och styrplatta: egen hantering i stället för OrbitControls, som delar delta med 100 × pixeltäthet (Retina = 200)
+// och därför zoomar mycket långsamt med Macens styrplatta. wz = kvarvarande zoom (logaritmisk avståndsfaktor), mjukas ut i frame().
+let wz=0,gsc=1;
+function wzAdd(d){if(!controls.enabled||!controls.enableZoom)return;tw=null;touch();wz=Math.max(-2,Math.min(2,wz+d));}
+function wzStep(){if(Math.abs(wz)<1e-4){wz=0;return false;}const d=wz*0.35;wz-=d;const off=camera.position.clone().sub(controls.target),len=off.length();
+  const nl=Math.min(controls.maxDistance,Math.max(controls.minDistance,len*Math.exp(d)));if(nl===len)wz=0;camera.position.copy(controls.target).add(off.setLength(nl));return true;}
+stage.addEventListener('wheel',e=>{if(e.target!==renderer.domElement)return;e.preventDefault();e.stopPropagation();
+  let px=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?stage.clientHeight:1);
+  if(e.ctrlKey){px=Math.max(-60,Math.min(60,px));wzAdd(px*0.01);}            // nyp på styrplattan (Chrome, Edge, Firefox)
+  else{px=Math.max(-240,Math.min(240,px));wzAdd(px*0.001);}                    // två fingrar eller mushjul: 100 px ≈ 10 %
+},{capture:true,passive:false});
+if(!(navigator.maxTouchPoints>0)){                                            // nyp i Safari på Mac (inte iPad/iPhone, där sköter OrbitControls nypet)
+  stage.addEventListener('gesturestart',e=>{e.preventDefault();gsc=1;},{passive:false});
+  stage.addEventListener('gesturechange',e=>{e.preventDefault();const sc=e.scale||1;wzAdd(-Math.log(sc/gsc));gsc=sc;},{passive:false});
+  stage.addEventListener('gestureend',e=>e.preventDefault(),{passive:false});}
 
 /* ------------------------------------------------------------------ viloläge (butik) */
 let last=performance.now();function touch(){last=performance.now();controls.autoRotate=false;}
@@ -3199,6 +3214,7 @@ function frame(now){
   requestAnimationFrame(frame);let act=false;
   if(tw){act=true;const k=Math.min(1,(now-tw.t0)/tw.dur),e=ease(k);camera.position.lerpVectors(tw.p0,tw.p1,e);controls.target.lerpVectors(tw.g0,tw.g1,e);if(k>=1)tw=null;}
   if(cutTw){act=true;const k=Math.min(1,(now-cutTw.t0)/(reduce?1:900)),e=ease(k);const t=cutTw.from+(cutTw.to-cutTw.from)*e;applyCut(t);cutEl.value=Math.round(t*100);if(k>=1)cutTw=null;}
+  if(wzStep())act=true;
   if(controls.update())act=true;idle(now);if(controls.autoRotate)act=true;
   const pul=0.10+0.14*(1+Math.sin(now/300));if(sel){act=true;for(const m of partMats[sel]||[])m.emissiveIntensity=pul;}
   if(drillTw){act=true;const k=Math.max(0,Math.min(1,(now-drillTw.t0)/(reduce?1:1300))),e=ease(k);drillE=drillTw.from+(drillTw.to-drillTw.from)*e;expEl.value=Math.round(drillE*100);const mx=document.getElementById('mexp');if(mx)mx.value=expEl.value;if(k>=1)drillTw=null;}
