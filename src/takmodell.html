@@ -1134,6 +1134,8 @@ function lvlBox(w,h,d,b,t){const g=new THREE.BoxGeometry(w,h,d);g.applyQuaternio
 /* ------------------------------------------------------------------ hus */
 const house=new THREE.Group();scene.add(house);const ENV=new THREE.Group();scene.add(ENV);
 const whiteM=M(null,'white',{color:0xf2f1ec,roughness:.75});
+const TFV=(new URLSearchParams(location.search).get('takfot')||'sned');   // takfotens undersida: sned (inklädd i takets lutning), oppen, vag (gamla liggande)
+const TFS=TFV==='sned',FBB=TFS?0.19:0.15,TFD=RAF+0.016,TFE=TFD*TN,VSB=TFS?-0.165:-0.15;   // sned: fotbrädan 4 cm lägre, inklädnaden når fotbrädans baksida, vindskivan täcker inklädnadens kant
 const SOFFM=M(null,'takfotsinkladnad',{color:0xeeede8,map:grainTex,roughness:.65},{role:'tfb'});
 const FW=faluTex();
 const wallMat=(k,rx,ry)=>{const map=FW.map.clone();map.repeat.set(rx,ry);map.needsUpdate=true;const b=FW.bump.clone();b.repeat.set(rx,ry);b.needsUpdate=true;return M(null,k,{color:0xffffff,map,bumpMap:b,bumpScale:2.5,roughness:.92});};
@@ -1200,7 +1202,7 @@ for(const back of [false,true]){
   // regel 45x45 och vindskiva och trekantslist
   const rM=M('regel45','m',{color:0xd3b68a,map:grainTex,roughness:.8},{});
   add(g,mergeGeometries([boxZ(XR-0.0225,0.045,-0.045,0,0,S),boxZ(-XR+0.0225,0.045,-0.045,0,0,S)]),rM,'regel45',null);
-  add(g,mergeGeometries([boxZ(XR+0.014,0.028,-0.15,Y1+0.04,-0.02,S+0.02),boxZ(-XR-0.014,0.028,-0.15,Y1+0.04,-0.02,S+0.02)]),M('vindskiva','m',{color:COL.r.board,map:grainTex,roughness:.6},{role:'board'}),'vindskiva',null);
+  add(g,mergeGeometries([boxZ(XR+0.014,0.028,VSB,Y1+0.04,-0.02,S+0.02),boxZ(-XR-0.014,0.028,VSB,Y1+0.04,-0.02,S+0.02)]),M('vindskiva','m',{color:COL.r.board,map:grainTex,roughness:.6},{role:'board'}),'vindskiva',null);
   const tri=(x0,x1)=>{const s=new THREE.Shape([new THREE.Vector2(x0,Y1),new THREE.Vector2(x1,Y1),new THREE.Vector2(x1,Y1+0.05)]);return new THREE.ExtrudeGeometry(s,{depth:S,bevelEnabled:false});};
   add(g,mergeGeometries([tri(XR-0.05,XR),tri(-XR+0.05,-XR)]),M('trekantslist','m',{color:0xd8bd92,map:grainTex,roughness:.8,side:THREE.DoubleSide},{layer:'rasp'}),'trekantslist','rasp');
   // råspont, remsa, fotplåt
@@ -1233,8 +1235,9 @@ for(const back of [false,true]){
   // vindskivebeslag (TL, 2 m-längder med 0,1 m omlott)
   for(const s2 of [1,-1])buildVindbeslag(houseMk(Ly.pan,'pan'),XR*s2,s2,0,S+0.03);
   // fotbräda, takfotsinklädnad, fotplåtens kant
-  add(outer,boxMM(-XR-0.028,XR+0.028,YE-0.15,YE+0.02,ZE,ZE+0.022),M('fotbrada','m',{color:COL.r.board,map:grainTex,roughness:.6},{role:'board'}),'fotbrada',null);
-  add(outer,boxMM(-XR,XR,YE-0.17,YE-0.15,HW,ZE),SOFFM,null,null);
+  add(outer,boxMM(-XR-0.028,XR+0.028,YE-FBB,YE+0.02,ZE,ZE+0.022),M('fotbrada','m',{color:COL.r.board,map:grainTex,roughness:.6},{role:'board'}),'fotbrada',null);
+  if(TFV==='vag')add(outer,boxMM(-XR,XR,YE-0.17,YE-0.15,HW,ZE),SOFFM,null,null);
+  else if(TFV==='sned')add(g,mergeGeometries([boxMM(-XR,XR,-TFD,-RAF,HW/CS-0.03,S+TFE),boxMM(L/2,XR,-TFD,-RAF,0,HW/CS-0.03),boxMM(-XR,-L/2,-TFD,-RAF,0,HW/CS-0.03)]),SOFFM,null,null);
   houseMk(outer,null)(fotplatNose(-XR,XR,ZE+0.022,YE+0.02),'acc','fotplat');
   sd.zg=ZE+0.0225+0.004+0.0625+0.006; sd.yg=YE-0.035;
 }
@@ -1975,8 +1978,8 @@ function buildXRoof(cfg){
     A(g,mergeGeometries(rs),M(null,'takstol',{}),null,null);
     for(const [X0,s] of gab){
       A(g,boxZ(X0-s*0.0225,0.045,-0.045,0,0,SS),M('regel45','m',{color:0xd3b68a,map:grainTex,roughness:.8},{}),'regel45',null);
-      A(g,boxZ(X0+s*0.014,0.028,-0.15,Y1+0.04,-0.02,SS+0.02),M('vindskiva','m',{color:COL.r.board,map:grainTex,roughness:.6},{role:'board'}),'vindskiva',null,BL);
-      tmk(g,null,PL)(boxZ(X0+s*0.014,0.028,-0.15,Y4-0.005,-0.02,SS+0.02),'board','vindskiva').userData.hm=cfg.hm;
+      A(g,boxZ(X0+s*0.014,0.028,VSB,Y1+0.04,-0.02,SS+0.02),M('vindskiva','m',{color:COL.r.board,map:grainTex,roughness:.6},{role:'board'}),'vindskiva',null,BL);
+      tmk(g,null,PL)(boxZ(X0+s*0.014,0.028,VSB,Y4-0.005,-0.02,SS+0.02),'board','vindskiva').userData.hm=cfg.hm;
       const tr=new THREE.ExtrudeGeometry(new THREE.Shape([new THREE.Vector2(X0-s*0.05,Y1),new THREE.Vector2(X0,Y1),new THREE.Vector2(X0,Y1+0.05)]),{depth:SS,bevelEnabled:false});
       A(g,tr,M('trekantslist','m',{color:0xd8bd92,map:grainTex,roughness:.8,side:THREE.DoubleSide},{layer:'rasp'}),'trekantslist','rasp');
       mkL(Ly.papp,'papp')(pappFold(X0,s,0,SS-0.006),'papp','underlag');
@@ -2005,8 +2008,9 @@ function buildXRoof(cfg){
       for(let i=0;i<ZB.length;i++)for(let c=0;c<n;c++){ms.push(mtx(x0+c*CWL,Y4-0.002,ZB[i]-0.03,-tilt));const v=0.84+r()*0.24;cs.push(new THREE.Color(v,v*(0.95+r()*0.08),v*(0.93+r()*0.1)));}
       tag(tinst(Ly.pan,'pan',['lertegel'],pGeoL,'panL','panna',ms,cs));}
     // takfot
-    if(eave){A(outer,boxMM(xa-(gA?0.028:0),xb+(gB?0.028:0),ye-0.15,ye+0.02,ze,ze+0.022),M('fotbrada','m',{color:COL.r.board,map:grainTex,roughness:.6},{role:'board'}),'fotbrada',null);
-      A(outer,boxMM(xa,xb,ye-0.17,ye-0.15,hw,ze),SOFFM,null,null);
+    if(eave){A(outer,boxMM(xa-(gA?0.028:0),xb+(gB?0.028:0),ye-FBB,ye+0.02,ze,ze+0.022),M('fotbrada','m',{color:COL.r.board,map:grainTex,roughness:.6},{role:'board'}),'fotbrada',null);
+      if(TFV==='vag')A(outer,boxMM(xa,xb,ye-0.17,ye-0.15,hw,ze),SOFFM,null,null);
+      else if(TFS)A(g,boxMM(xa,xb,-TFD,-RAF,hw/CS-0.03,SS+TFE),SOFFM,null,null);
       mkL(outer,null,BL)(fotplatNose(xa,xb,ze+0.022,ye+0.02),'acc','fotplat');}
     // plåttak
     for(const tt of PL){const T=[tt],m=(grp,layer)=>(geo,kind,part)=>tag(tmk(grp,layer,T)(geo,kind,part));
@@ -2785,11 +2789,12 @@ function sampleStudio(dk,hole){
 function avvStudio(){
   const root=new THREE.Group();scene.add(root);const pl=plainIn(root),mk=drillMk('avvattning',root);
   const fy=2.72,ZF=0.5,XA=1.25;
-  pl(boxMM(-XA,XA,0.3,fy-0.19,-0.2,0),wallMat('wallS',2.5,2.3));
+  pl(boxMM(-XA,XA,0.3,TFS?fy+0.05:fy-0.19,-0.2,0),wallMat('wallS',2.5,2.3));
   pl(boxMM(-XA-0.02,XA+0.02,0,0.3,-0.22,0.02),M(null,'sockel',{}));
-  pl(boxMM(-XA,XA,fy-0.19,fy-0.17,-0.2,ZF),whiteM);
-  pl(boxMM(-XA,XA,fy-0.17,fy,ZF,ZF+0.022),M(null,'boardS',{color:COL[mode].board,map:grainTex,roughness:.6},{role:'tfb'}));
+  if(TFV==='vag')pl(boxMM(-XA,XA,fy-0.19,fy-0.17,-0.2,ZF),whiteM);
+  pl(boxMM(-XA,XA,fy-0.02-FBB,fy,ZF,ZF+0.022),M(null,'boardS',{color:COL[mode].board,map:grainTex,roughness:.6},{role:'tfb'}));
   const zl=1.3,G=new THREE.Group();G.position.set(0,fy-0.02+zl*SN,ZF-zl*CS);G.rotation.x=P;root.add(G);const gp=plainIn(G);
+  if(TFS){gp(boxMM(-XA,XA,-TFD,-RAF,zl-ZF/CS-0.03,zl+TFE),whiteM);gp(mergeGeometries([-0.6,0.6].map(x=>boxZ(x,0.045,-RAF,0,0.2,zl-0.003))),M(null,'takstol',{}));}
   gp(boxMM(-XA,XA,0,Y1,0.2,zl),M(null,'sRasp',{color:0xdcc49a,map:raspTex,roughness:.85}));gp(boxMM(-XA,XA,Y1+0.003,Y2,0.2,zl),M(null,'sPapp',{color:0xffffff,map:pappTex,roughness:.9}));
   gp(boxMM(-XA,XA,Y3,Y4,zl-0.354,zl-0.306),M(null,'sLakt',{color:0xdcbf8f,map:grainTex,roughness:.8}));gp(boxMM(-XA,XA,Y3,Y4,zl-0.684,zl-0.636),M(null,'sLakt',{}));
   const pmat=tileShader(M(null,'sPan',tileOpts(),{role:'pan'}));pmat.color.setHex(colOf('pan'));pmat.map=panC().flash?atlasFlash:atlasPlain;
@@ -2806,7 +2811,8 @@ function panGeoMerged(xs,zs){const list=[];let sd=61;for(const z of zs)for(const
 function takfotStudio(dk,withGlid){
   const {root,C,G}=roofFrame();const mkG=drillMk(dk,G),mkC=drillMk(dk,C),pg=plainIn(G),pc=plainIn(C);const XA=0.9,za=S-1.45,pl=PLAT(TT);
   pg(mergeGeometries([-0.6,0.6].map(x=>boxZ(x,0.045,-RAF,0,za-0.1,S-0.003))),M(null,'takstol',{}));
-  pc(boxMM(-XA,XA,YE-0.17,YE-0.15,HW,ZE),whiteM);pc(boxMM(-XA,XA,YE-0.9,YE-0.15,HW-0.2,HW),wallMat('wallS',2.5,2.3));
+  if(TFS){pg(boxMM(-XA,XA,-TFD,-RAF,HW/CS-0.03,S+TFE),whiteM);pc(boxMM(-XA,XA,YE-0.9,WT-0.02,HW-0.2,HW),wallMat('wallS',2.5,2.3));}
+  else{if(TFV==='vag')pc(boxMM(-XA,XA,YE-0.17,YE-0.15,HW,ZE),whiteM);pc(boxMM(-XA,XA,YE-0.9,YE-0.15,HW-0.2,HW),wallMat('wallS',2.5,2.3));}
   const L=k=>V3(0,k,0);
   const plain=(par)=>(g,k)=>plainIn(par)(g,new THREE.MeshPhysicalMaterial({...(kindOpts(k)[0]),envMapIntensity:.7}));
   const mG=withGlid?plain(G):mkG,mC=withGlid?plain(C):mkC;
@@ -2820,7 +2826,7 @@ function takfotStudio(dk,withGlid){
     mG(mergeS(screwPos(TT,-XA,XA,za,S+0.035,null).map(p=>{const g=screwHead.clone();g.translate(p.x,p.y,p.z);return g;})),'plat','farmarskruv',L(0.78));}
   else{const fb=new THREE.PlaneGeometry(2*XA,0.072);fb.translate(0,Y3+0.036,S-0.058);mG(fb,'comb','fagelband',L(0.48));
     const rows=zbs.filter(z=>z>za+0.05&&z<S-0.2);mG(tileMerged(TT,tileXs(TT,-0.75,0.75),rows.slice(-4)),covKind(TT),'panna',L(0.62));}
-  mkC(boxMM(-XA-0.028,XA+0.028,YE-0.15,YE+0.02,ZE,ZE+0.022),'board','fotbrada',V3(0,0,0));
+  mkC(boxMM(-XA-0.028,XA+0.028,YE-FBB,YE+0.02,ZE,ZE+0.022),'board','fotbrada',V3(0,0,0));
   const mk2=withGlid?plain(C):mkC;
   buildAvv(mk2,{noPipe:true,xa:-XA+0.05,xb:XA-0.05,ZF:ZE+0.022,yb:YE+0.02,x0:0,zw:HW,hooks:[-0.6,0,0.6],skarv:null,yBot:YE-1,off:{hangranna:V3(0,-0.1,0.3),rannkrok:V3(0,-0.05,0.18),rannkroksskruv:V3(0,-0.05,0.24)}});
   if(withGlid){
